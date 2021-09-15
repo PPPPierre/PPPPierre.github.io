@@ -1,9 +1,18 @@
-# Generated site
-/_site
+# hidden files
+.*
+!.git*
+!.editorconfig
+!.nojekyll
+!.travis.yml
 
-# Local packages
-/.bundle/ruby/
+# bundler cache
+_site
+vendor
+Gemfile.lock
 
-# Temporary files
-.sass-cache/
-.jekyll-metadata
+# rubygem
+*.gem
+
+# npm dependencies
+node_modules
+package-lock.json
