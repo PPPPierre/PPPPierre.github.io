@@ -93,16 +93,16 @@ Jekyll 是一个用 [**Ruby**](ruby-homepage) 语言编写的静态网站框架�
 
 [^favicon]: [Chirpy: Customize the Favicon](https://chirpy.cotes.info/posts/customize-the-favicon/)
 
-[github-pages-homepage]: (https://pages.github.com/)
+[github-pages-homepage]: https://pages.github.com/
 
-[ruby-homepage]: (https://www.ruby-lang.org/en/)
+[ruby-homepage]: https://www.ruby-lang.org/en/
 
-[chirpy-homepage]: (https://github.com/cotes2020/jekyll-theme-chirpy/)
+[chirpy-homepage]: https://github.com/cotes2020/jekyll-theme-chirpy/
 
-[chirpy-demo]: (https://chirpy.cotes.info/)
+[chirpy-demo]: https://chirpy.cotes.info/
 
-[jekyll-themes-homepage]: (http://jekyllthemes.org/)
+[jekyll-themes-homepage]: http://jekyllthemes.org/
 
-[smms-homepage]: (https://sm.ms/)
+[smms-homepage]: https://sm.ms/
 
-[favicon-generator-homepage]: (https://realfavicongenerator.net/)
+[favicon-generator-homepage]: https://realfavicongenerator.net/
