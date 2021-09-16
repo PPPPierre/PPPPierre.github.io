@@ -20,12 +20,12 @@ timezone: Asia/Shanghai
 
 title: Stone SHI                          # the main title
 
-tagline: Personal blog used to record my learning, skills, and life.   # it will display as the sub-title
+tagline: Personal blog used to record my learning, progress, and life.   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
-  A minimal, portfolio, sidebar,
-  bootstrap Jekyll theme with responsive web design
-  and focuses on text presentation.
+  A sportive, outcoming, positive boy who
+  always likes to challenge himself
+  and never stops moving forward. 
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: ''
