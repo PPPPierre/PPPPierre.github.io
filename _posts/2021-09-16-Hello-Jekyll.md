@@ -36,6 +36,16 @@ Jekyll 是一个用 [**Ruby**][ruby-homepage] 语言编写的静态网站框架�
 
 该博客站点的主题 [**Chirpy**][chirpy-homepage] 就是在我上面提到的网站 [Jekyll Themes][jekyll-themes-homepage] 找到的。在该主题的 [GitHub 主页][chirpy-homepage][^chirpy-hp]上，开发者也非常耐心地讲解了如何应用该主题。在这个主题的[官方 Demo][chirpy-demo] 页面上也有文章引导使用者如何进行一些自定义的配置。
 
+## 本地测试
+
+在本地可以直接测试搭建好的博客，在博客的目录下输入
+
+```sh
+bundle exec jekyll serve
+```
+
+如果成功搭建，输出会包含一个 `http://127.0.0.1:4000/` 地址，在浏览器输入这个地址就可查看当前的博客了。
+
 # 主题框架的应用
 
 这里记录一下在本地部署应用这个主题框架的时候需要注意的一些要点，方便下次需要升级或者更换主题框架的时候参考。

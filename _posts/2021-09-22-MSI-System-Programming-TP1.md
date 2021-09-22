@@ -1,5 +1,5 @@
 ---
-title: \[专业课\]系统编程小项目一 使用 Buildroot 编译 Linux 内核
+title: <专业课> 系统编程小项目一 - 使用 Buildroot 编译 Linux 内核
 author: Stone SHI
 date: 2021-09-22 23:11:00 +0200
 categories: [Blogging, Study]
