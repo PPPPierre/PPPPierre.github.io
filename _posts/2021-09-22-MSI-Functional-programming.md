@@ -1,5 +1,5 @@
 ---
-title: <专业课> 函数式编程小项目 - 基于Haskell编写的算术表达式语法分析器
+title: 【专业课】 函数式编程小项目 - 基于Haskell编写的算术表达式语法分析器
 author: Stone SHI
 date: 2021-09-22 22:58:00 +0200
 categories: [Blogging, Study]

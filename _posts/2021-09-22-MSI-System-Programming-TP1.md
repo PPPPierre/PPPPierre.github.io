@@ -1,5 +1,5 @@
 ---
-title: <专业课> 系统编程小项目一 - 使用 Buildroot 编译 Linux 内核
+title: 【专业课】 系统编程小项目一 - 使用 Buildroot 编译 Linux 内核
 author: Stone SHI
 date: 2021-09-22 23:11:00 +0200
 categories: [Blogging, Study]
@@ -38,10 +38,11 @@ $ make menuconfig
 
 然后进行一些选项的勾选：
 
-1. `Toolchain` 里面的 `Enable WCHAR` 勾选上
-2. `Kernal` 里面的 `Kernal configuration` 选 `Use the architecture default configuration`
-3. `Filsystem images` 里面的 `iso image` 勾选上
-4. `Bootloaders` 里面的 `grub2` 勾选上（忘记这个是不是默认就勾选的了）
+1. `Toolchain` -> `Enable WCHAR` 勾选
+2. `Kernal` -> `Kernal configuration` 选 `Use the architecture default configuration`
+3. `Filsystem images` -> `iso image` 勾选
+4. `Bootloaders` -> `grub2` 勾选（忘记这个是不是默认就勾选的了）
+5. `Target packages` -> `Libraries` -> `Crypto` -> `CA Certificate` 勾选
 
 最后输入
 
