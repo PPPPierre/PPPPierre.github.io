@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 系统编程小项目二 - 使用 C 语言编写一个 Linux 的 Mini shell
+title: 【专业课】 系统编程项目二 - 使用 C 语言编写一个 Linux 的 Mini shell
 author: Stone SHI
 date: 2021-09-22 22:58:00 +0200
 categories: [Blogging, Study]
@@ -30,5 +30,15 @@ tags: [Functional Programming, C, Linux]
 `sys/types.h` 是 Unix/Linux 系统的基本系统数据类型的头文件，含有size_t，time_t，pid_t等类型。
 
 `unistd.h` 是 unix std 的意思，是POSIX标准定义的unix类系统定义符号常量的头文件，包含了许多UNIX系统服务的函数原型。unistd.h 在 unix 中类似于 windows 中的 windows.h。
+
+## 3. 编译
+
+在 terminal 中输入
+
+```sh
+gcc xxx.c -o xxx
+```
+
+即可，其中第一个 xxx.c 是你的源文件的文件名，第二个文件是编译后输出的文件名。
 
 # 参考链接

@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 系统编程小项目一 - 使用 Buildroot 编译 Linux 内核
+title: 【专业课】 系统编程项目一 - 使用 Buildroot 编译 Linux 内核
 author: Stone SHI
 date: 2021-09-22 23:11:00 +0200
 categories: [Blogging, Study]
@@ -14,7 +14,13 @@ tags: [System Programming, Buildroot, Linux]
 
 # Linux 系统
 
+# Buildroot
+
+这个东西的意义在于帮助你制作一个 Linux 镜像，并且直接在里面以包的形式加上自己的软件，然后就可以将这个镜像发布出去。
+
 # 项目：使用 Buildroot 来编译一个 Linux 内核
+
+首先给一个 x86 的处理器编译一个 Linux 内核，然后为一个 RAM 处理器（比如树莓派）编译内核，由于处理器不同，两个编译的 Linux 内核也不同。
 
 ## 1. 环境搭建
 
@@ -28,7 +34,7 @@ tags: [System Programming, Buildroot, Linux]
 
 ## 2. 设置 make config
 
-首先需要对编译进行设置一下。
+如果要自定义一个内核，那就需要对编译进行设置一下。
 
 在 buildroot 的目录下输入
 
@@ -36,23 +42,50 @@ tags: [System Programming, Buildroot, Linux]
 $ make menuconfig
 ```
 
-然后进行一些选项的勾选：
+然后就可以根据官方的文档对这些项目进行更改了。
 
-1. `Toolchain` -> `Enable WCHAR` 勾选
-2. `Kernal` -> `Kernal configuration` 选 `Use the architecture default configuration`
-3. `Filsystem images` -> `iso image` 勾选
-4. `Bootloaders` -> `grub2` 勾选（忘记这个是不是默认就勾选的了）
-5. `Target packages` -> `Libraries` -> `Crypto` -> `CA Certificate` 勾选
+但是我们这里需要首先用官方给的 x86 标准设定。
 
-最后输入
+进入 build-x64 文件夹之后
+
+设定
+
+```sh
+$ make menuconfig
+```
+
+然后就可以退出来
+
+输入
 
 ```sh
 $ make
 ```
 
-就可以了，等很长一段时间就编译完毕了
+进行等待就行了
 
-## 3. 制作启动盘
+## 3. 在编译的 Linux 镜像里加入自己的包
+
+首先把自己的包的源文件加入到 build_root 文件夹的 Package 目录里
+
+然后 为其编写两个 文件 一个是 `Config.in` 文件用于把我们的包加入到 `menuconfig` 的选项里
+然后 `xxx.mk` 文件告诉 Buildroot 怎么编译。
+
+然后进入 build-x64 文件夹里，输入 
+
+```sh
+make menuconfig
+```
+
+在 game 里选中 package
+
+然后
+
+```sh
+make
+```
+
+## 4. 制作启动盘
 
 将编译完的文件拷到一个U盘里，再在电脑上使用从U盘启动，这个U盘就可以作为一个Linux的启动盘了。
 
