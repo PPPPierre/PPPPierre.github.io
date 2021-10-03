@@ -49,13 +49,15 @@ tags: [System, Linux, wsl]
 
 ## 安装图形界面
 
+安装完 Ubuntu 之后可以安装一个对应的图形界面，方便使用。
 
+# 问题解决
 
-# 常见问题
+这里列举我在安装过程中遇到的问题以及解决的方案。
 
 ## 与 Virtualbox 的兼容问题
 
-安装完 WSL2 之后，会发现 Virtualbox 的虚拟机无法启动。在网上查找了资料之后发现二者并不能完美兼容 [^hyper_v_wsl2]。在需要使用 Virtualbox 的时候，需要把 hyper-V 的虚拟功能关闭，但是关闭了该功能后 WSL2 又无法启动了，目前没有找到能完美解决的方案。
+安装完 WSL2 之后，会发现 Virtualbox 的虚拟机无法启动。在网上查找了资料[^hyper_v_wsl2_2]之后发现二者并不能完美兼容。在需要使用 Virtualbox 的时候，需要把 hyper-V 的虚拟功能关闭[^hyper_v_wsl2_3]，但是关闭了该功能后 WSL2 又无法启动了，目前还没有能完美解决该问题的方案[^hyper_v_wsl2_1]。
 
 在 Powershell 中输入如下指令，停用 hyper-V ，使用 Virtualbox
 
@@ -71,11 +73,11 @@ tags: [System, Linux, wsl]
 
 # 参考链接
 
-[^hyper_v_wsl2]:[how-to-get-oracle-vm-virtualbox-6-0-and-wsl-working-at-the-same-time]: https://stackoverflow.com/questions/58031941/how-to-get-oracle-vm-virtualbox-6-0-and-wsl-working-at-the-same-time/58478688
+[^hyper_v_wsl2_1]:[how-to-get-oracle-vm-virtualbox-6-0-and-wsl-working-at-the-same-time](https://stackoverflow.com/questions/58031941/how-to-get-oracle-vm-virtualbox-6-0-and-wsl-working-at-the-same-time/58478688)
 
-[^hyper_v_wsl2]:[unable-to-boot-windows-10-guest-using-virtualbox-with-enabled-hyper-v-and-wsl2-i]: https://stackoverflow.com/questions/62184881/unable-to-boot-windows-10-guest-using-virtualbox-with-enabled-hyper-v-and-wsl2-i
+[^hyper_v_wsl2_2]:[unable-to-boot-windows-10-guest-using-virtualbox-with-enabled-hyper-v-and-wsl2-i](https://stackoverflow.com/questions/62184881/unable-to-boot-windows-10-guest-using-virtualbox-with-enabled-hyper-v-and-wsl2-i)
 
-[^hyper_v_wsl2]: [how-to-disable-hyper-v-in-command-line]: https://stackoverflow.com/questions/30496116/how-to-disable-hyper-v-in-command-line
+[^hyper_v_wsl2_3]: [how-to-disable-hyper-v-in-command-line](https://stackoverflow.com/questions/30496116/how-to-disable-hyper-v-in-command-line)
 
 [WSL2_offical_installation_turorial]: https://docs.microsoft.com/fr-fr/windows/wsl/install
 
