@@ -43,9 +43,13 @@ tags: [System, Linux, wsl]
 
 ## 安装 Windows Terminal
 
-再在 Windows 商店下载 **Windows Terminal**。使用比较方便，界面美观，支持一个窗口打开多个 Terminal：命令行、Powershell 和 Linux 都可以一起在一个窗口打开。同时支持自定义，用起来比较舒服。
+之后在 Windows 商店下载 **Windows Terminal**。使用比较方便，界面美观，支持一个窗口打开多个 Terminal：命令行、Powershell 和 Linux 都可以一起在一个窗口打开。同时支持自定义，用起来比较舒服，可以通过查看[官方的教程][Windows_terminal_official_customize]来自定义美化自己的 Terminal。
 
 ![Windows Terminal](pictures/windows_t.png)
+
+## 安装图形界面
+
+
 
 # 常见问题
 
@@ -74,4 +78,7 @@ tags: [System, Linux, wsl]
 [^hyper_v_wsl2]: [how-to-disable-hyper-v-in-command-line]: https://stackoverflow.com/questions/30496116/how-to-disable-hyper-v-in-command-line
 
 [WSL2_offical_installation_turorial]: https://docs.microsoft.com/fr-fr/windows/wsl/install
+
 [docker_official_site]: https://www.docker.com)
+
+[Windows_terminal_official_customize]: https://docs.microsoft.com/zh-cn/windows/terminal/customize-settings/startup
