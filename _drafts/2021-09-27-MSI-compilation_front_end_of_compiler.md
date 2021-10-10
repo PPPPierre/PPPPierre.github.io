@@ -14,6 +14,12 @@ tags: [Compilation, Java, Parser]
 
 目标语言运行的机器使用 Python 模拟的，整个程序运行过程也是直接可以在环境里完成。
 
+理论：Parser Generator
+
+另一个参考语言：Scala
+
+对于代码的优化更多的集中在汇编代码或者中介代码产生的过程中，而不是在句法层面。例子：2.3 第 13 题的实现。
+
 # 环境搭建
 
 运行环境是在 wsl2 的 Ubuntu 20.04 LTS 的基础上搭建的 Java 环境。

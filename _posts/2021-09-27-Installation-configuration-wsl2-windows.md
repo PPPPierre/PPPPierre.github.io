@@ -1,12 +1,12 @@
 ---
-title: 【Linux 环境搭建】在 Windows 10 上搭建 wsl2 虚拟 Linux 环境
+title: 【Linux 环境搭建】在 Win10 上搭建 wsl2 虚拟 Linux 环境
 author: Stone SHI
 date: 2021-09-27 09:00:00 +0200
 categories: [Blogging, System]
 tags: [System, Linux, wsl]
 ---
 
-# wsl2 介绍
+# WSL2 介绍
 
 # 环境搭建步骤
 
@@ -49,7 +49,13 @@ tags: [System, Linux, wsl]
 
 ## 安装图形界面
 
-安装完 Ubuntu 之后可以安装一个对应的图形界面，方便使用。
+安装完 Ubuntu 之后可以安装一个对应的图形界面，方便使用。因为目前暂时没有需求，所以只把找到的参考网站贴在这里：
+
+[WSL2 + Ubuntu + 图形界面安装](https://www.bilibili.com/read/cv11143517)
+
+[Windows10 WSL2 Ubuntu 图形界面环境搭建（Xfce4 、XServer）](https://cloud.tencent.com/developer/article/1820014)
+
+推荐 Xfce4 和 VcXSrv 的组合。其中 VcXSrv 至今还一直在维护，稳定性有保证。
 
 # 问题解决
 
