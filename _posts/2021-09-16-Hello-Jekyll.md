@@ -36,6 +36,10 @@ Jekyll 是一个用 [**Ruby**][ruby-homepage] 语言编写的静态网站框架�
 
 该博客站点的主题 [**Chirpy**][chirpy-homepage] 就是在我上面提到的网站 [Jekyll Themes][jekyll-themes-homepage] 找到的。在该主题的 [GitHub 主页][chirpy-homepage][^chirpy-hp]上，开发者也非常耐心地讲解了如何应用该主题。在这个主题的[官方 Demo][chirpy-demo] 页面上也有文章引导使用者如何进行一些自定义的配置。
 
+## 内容编辑与发布
+
+需要发布的博客存放在 `\posts` 文件夹中，暂时不发布的则可以存放在 `\drafs` 文件夹中。
+
 ## 本地测试
 
 在本地可以直接测试搭建好的博客，在博客的目录下输入
