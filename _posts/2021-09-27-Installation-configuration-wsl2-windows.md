@@ -47,8 +47,6 @@ tags: [System, Linux, wsl]
 
 ![Windows Terminal](/pictures/windows_t.png)
 
-<Windows_Terminal src="/pictures/windows_t.png"/>
-
 ## 安装图形界面
 
 安装完 Ubuntu 之后可以安装一个对应的图形界面，方便使用。因为目前暂时没有需求，所以只把找到的参考网站贴在这里：
