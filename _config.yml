@@ -84,7 +84,8 @@ img_cdn: ''
 # the avatar on sidebar, support local or CORS resources
 # avatar: https://cdn.jsdelivr.net/gh/cotes2020/chirpy-images/commons/avatar.jpg # 原版头像：小蚂蚁
 # avatar: https://i.loli.net/2021/09/16/vVpgmHjGtI9e8Mw.jpg # 玉龙雪山头像
-avatar: https://i.loli.net/2021/09/16/thGTlYyQmkpPuqn.jpg # 丽江旅拍
+avatar: https://i.loli.net/2021/10/18/ZQlvsDd2akF9c1C.jpg # 丽江旅拍
+
 
 # boolean type, the global switch for ToC in posts.
 toc: true
