@@ -20,7 +20,7 @@ tags: [System, Linux, wsl]
 
 在微软商店选择一个 Linux 发行版下载就好，比如我选择的是 Ubuntu 20.04 LTS.
 
-![Ubuntu 20.04 LTS](pictures/ubuntu_20_04.png)
+![Ubuntu 20.04 LTS](/pictures/ubuntu_20_04.png)
 
 安装后打开设置用户名密码即可。
 
@@ -45,7 +45,9 @@ tags: [System, Linux, wsl]
 
 之后在 Windows 商店下载 **Windows Terminal**。使用比较方便，界面美观，支持一个窗口打开多个 Terminal：命令行、Powershell 和 Linux 都可以一起在一个窗口打开。同时支持自定义，用起来比较舒服，可以通过查看[官方的教程][Windows_terminal_official_customize]来自定义美化自己的 Terminal。
 
-![Windows Terminal](pictures/windows_t.png)
+![Windows Terminal](/pictures/windows_t.png)
+
+<Windows_Terminal src="/pictures/windows_t.png"/>
 
 ## 安装图形界面
 
