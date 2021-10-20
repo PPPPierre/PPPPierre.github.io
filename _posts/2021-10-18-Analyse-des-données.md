@@ -32,7 +32,7 @@ Philippe MOUTTOU
 
 # II. Contexte
 
-posé le pb 
+poser le pb 
 
 1. Definition du pb
 
@@ -82,7 +82,45 @@ $$x(x^1, x^2, ... ,x^p)$$
 
 Notation $\mathbb{R}$
 
+Espace vectoriel euclidien
+
+Espace affine euclidien
+
+$$ x=\left[ \begin{matrix} x^1 \\ x^2 \\ \vdots \\ x^p \end{matrix} \right], \quad y=\left[ \begin{matrix} y^1 \\ y^2 \\ \vdots \\ y^p \end{matrix} \right] $$
+
+On définit,
+
+$$ (x|y) = \displaystyle \sum ^{p}_{i = 1}{x^iy^i} $$
+
+$$ \left \| x \right \| = \sqrt {(x|x)} $$
+
+$$ d^2(x, y) = \displaystyle \sum ^{p}_{i = 1}{(x^i-y^i)^2} $$
+
 ## 3. Problème
+
+Soit $n \in \mathbb{N}$, soit un ensmeble de $n$ points 
+
+$$ N=(x_i)_{1\leq i \leq n} \in (\mathbb{R}^p)^n $$
+
+avec les poids 
+
+$$ P=(p_i)_{1 \leq i \leq n} \in {[0,+ \infty [}^n $$ 
+
+tels que $ \displaystyle \sum _{i}{p_i}=1 $
+
+On définit $g$ le `centre de grativité` sous cette condition 
+
+$$ g = \displaystyle \sum^{n}_{i=1}{p_ix_i} $$
+
+le Critère de Fidélité:
+
+$$\tag{Fidelity criteria} \operatorname {Max}(\displaystyle \sum _{i}{\displaystyle \sum _{j}{p_ip_jd^2(\hat{x_i}, \hat{x_j})}})$$
+
+Definisson $ \operatorname {M^t} (H) = \displaystyle \sum _{i}{p_i {\left \| x_i - \hat{x_i} \right \|}^2}$
+
+le Critère de Proximité:
+
+$$ \tag{Proximity Criteria} \operatorname {Min} (\operatorname {M^t} (H) ) $$
 
 ## 4. Résultats
 

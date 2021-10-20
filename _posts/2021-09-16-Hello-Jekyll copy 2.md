@@ -1,8 +1,8 @@
 ---
-title: 免费搭建一个基于 Jekyll 的博客站点!
+title: Blog - 免费搭建一个基于 Jekyll 的博客站点!
 author: Stone SHI
 date: 2021-09-16 18:00:00 +0200
-categories: [Blogging, ]
+categories: [Blogging, Blog]
 tags: [Blog, Jekyll]
 ---
 
@@ -37,18 +37,6 @@ Jekyll 是一个用 [**Ruby**][ruby-homepage] 语言编写的静态网站框架�
 该博客站点的主题 [**Chirpy**][chirpy-homepage] 就是在我上面提到的网站 [Jekyll Themes][jekyll-themes-homepage] 找到的。在该主题的 [GitHub 主页][chirpy-homepage][^chirpy-hp]上，开发者也非常耐心地讲解了如何应用该主题。在这个主题的[官方 Demo][chirpy-demo] 页面上也有文章引导使用者如何进行一些自定义的配置。
 
 ## 编写博文
-
-# 文件存放
-
-`_posts` 需要发布的博客的存放位置
-
-`_drafts` 草稿的存放位置
-
-# 内容编辑
-
-# 图片引用
-
-# 数学公式
 
 ## 本地调试
 
