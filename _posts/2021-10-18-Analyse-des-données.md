@@ -129,10 +129,9 @@ $$ \tag{Proximity Criteria} \operatorname {Min} (\operatorname {M^t} (H) ) $$
 ## 6. Critère
 
 
-# V. Infos Complémentaires
+# V. Infos Complémentaires 
 
-<div id="TRL"></div>
-## Technical Reacliness Level (TRL) 
+## Technical Reacliness Level (TRL) {#TRL}
 
 1 - 9 
 
