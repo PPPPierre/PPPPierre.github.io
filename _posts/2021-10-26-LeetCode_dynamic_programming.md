@@ -20,7 +20,17 @@ tags: [LeetCode, Dynamic Programming]
 
 # 32. Longest Valid Parentheses
 
-动态规划思路
+本解法中体现的动态规划思路：
+
+假设输入 list 为 `s`, 初始化一个相同长度的全 0 list `dp` 作为存放结果的表。
+
+通过遍历输入 `s` 对 `dp` 进行赋值更新。
+
+`dp[i]` 的值为当输入为 `list[:i+1]` 时的 Longest Valid Parentheses，即输出。
+
+因此我们有 `dp[0] = 0`。
+
+而当我们找到 `s[i]`、`s[i-1]` 以及 `dp[i-1]` 推出 `dp[i]` 的关系时，我们也就可以通过这一递推关系构造整个 `dp` 数列。
 
 ```python
 class Solution:
