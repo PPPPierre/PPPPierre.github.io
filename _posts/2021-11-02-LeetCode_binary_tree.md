@@ -198,6 +198,8 @@ class Solution:
 
 # 102. Binary Tree Level Order Traversal
 
+思路：队列 + 前序遍历
+
 ```Python
 # Definition for a binary tree node.
 # class TreeNode:
@@ -231,3 +233,46 @@ class Solution:
         return res_list
 ```
 
+# 103. Binary Tree Zigzag Level Order Traversal
+
+与上一题思路一致
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        
+        res_list = []
+        node_queue = []
+        
+        def _rec(root: Optional[TreeNode], lv:int):
+            
+            if not root: return
+            
+            if lv >= len(res_list):
+                res_list.append([root.val])
+            else:
+                if lv%2 == 0:
+                    res_list[lv].append(root.val)
+                else:
+                    res_list[lv].insert(0, root.val)
+            
+            node_queue.append((root.left, lv + 1))
+            node_queue.append((root.right, lv + 1))
+            
+            _rec(*node_queue.pop(0))
+            _rec(*node_queue.pop(0))
+            
+        _rec(root, 0)
+        return res_list
+```
+
+# 105. Construct Binary Tree from Preorder and Inorder Traversal
+
+# 106. Construct Binary Tree from Inorder and Postorder Traversal
