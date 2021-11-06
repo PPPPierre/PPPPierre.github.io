@@ -276,3 +276,98 @@ class Solution:
 # 105. Construct Binary Tree from Preorder and Inorder Traversal
 
 # 106. Construct Binary Tree from Inorder and Postorder Traversal
+
+# 107. Binary Tree Level Order Traversal II
+
+# 113. Path Sum II
+
+给定一个二叉树和一个`targetSum`，以数组形式返回所有从根节点到叶节点的值相加等于`targetSum`的路径。
+
+因此从根节点出发，遍历其到达任意一个叶节点的路径，在每一个叶节点处判断，如果该路径上的节点值的和等于`targetSum`，则逐节将各个节点的值插入到结果的`list`中返回。
+
+代码如下：
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        
+        # 判断二叉树是否为空
+        if not root: return []
+        
+        # 构造一个递归函数来遍历二叉树
+        # 信息向下传递（从根到叶）时，将目前累加的和叠加并向下传递
+        # 到达叶节点时将判断累加和是否等于 targetSum
+        # 信息向上传递（从叶到根）时，将以 list 形式返回所有经过该点的合法路径，各节点将自身的值插入其中并继续向上传递
+        def _rec(root: Optional[TreeNode], current_sum) -> List[List[int]]:
+            
+            ### 信息向下传递过程中的预处理
+            nonlocal targetSum
+            # 累加路径和
+            current_sum += root.val
+            # 判断是否为叶节点
+            if not root.left and not root.right and current_sum == targetSum:
+                return [[root.val]]
+            
+            list_left, list_right = [], []
+            
+            ### 递归调用于左子树
+            if root.left: list_left = _rec(root.left, current_sum)
+            ### 递归调用于右子树
+            if root.right: list_right = _rec(root.right, current_sum)
+                
+            ### 信息向上传递过程
+            # 将左子树和右子树返回的可能路径合并到一个 list 中
+            res_list = list_left + list_right
+            # 对 list 中的每一个路径插入本节点的值
+            for node_list in res_list:
+                node_list.insert(0, root.val)
+            return res_list
+        
+        return _rec(root, 0)
+```
+
+其实从这一题中可以抽象出一个二叉树遍历的整体逻辑，那就是信息的向下与向上传递的过程。
+
+在这一题中，路径目前累加的和作为信息向下（从根到叶）传递，而对于这个信息的预处理过程则在递归调用子树之前。
+
+当我们想把信息向下传递时，可以将该信息以递归函数的参数的形式传递。
+
+而在叶节点判断完毕后，路径信息则以 list 的形式向上传递，而每一个节点对于信息的后处理则在递归调用子树之后。
+
+当我们想把信息向上回传时，通常将其作为递归函数的返回值来传递。
+
+因此整体框架如下：
+
+```python
+
+def _rec(root: Optional[TreeNode], *info_to_end) -> info_return:
+            
+            ### 向下传递信息预处理
+            # ...
+            # *info_to_left, *info_to_right = pre_process(root, *info_to_end ...)
+            # ...
+            
+            ### 递归调用于左子树
+            if root.left: info_left = _rec(root.left, *info_to_left)
+
+            ### 如果左右子树的传入信息还有因果性，则可以在此处处理
+
+            ### 递归调用于右子树
+            if root.right: info_right = _rec(root.right, *info_to_right)
+                
+            ### 向上传递信息后处理
+            # ...
+            # info_return = post_process(root, info_left, info_right, ...)
+
+            return info_return
+
+```
+
+框架中的 `pre_process` `post_process` 函数只是将信息的预处理和后处理过程抽象化了，代表意义就是将当前节点的信息和上游传来的信息相结合处理后，再返回给下游，不论从父节点到子节点还是从子节点到父节点，都是一样的。
