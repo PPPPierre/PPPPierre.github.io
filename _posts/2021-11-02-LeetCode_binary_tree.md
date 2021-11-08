@@ -371,3 +371,85 @@ def _rec(root: Optional[TreeNode], *info_to_end) -> info_return:
 ```
 
 框架中的 `pre_process` `post_process` 函数只是将信息的预处理和后处理过程抽象化了，代表意义就是将当前节点的信息和上游传来的信息相结合处理后，再返回给下游，不论从父节点到子节点还是从子节点到父节点，都是一样的。
+
+# 124. Binary Tree Maximum Path Sum
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        
+        sum_max = -1001
+        
+        def _rec(root: Optional[TreeNode]) -> int:
+            
+            # 判断是否为空节点
+            if not root: return 0
+            
+            nonlocal sum_max
+            
+            # 递归左子树
+            max_left = _rec(root.left)
+            
+            # 递归右子树
+            max_right = _rec(root.right)
+            
+            # 计算只取半边时该节点处最大值
+            max_branch = max(root.val, root.val + max_left, root.val + max_right)
+            
+            # 与全局最大值作比较时还要考虑左右两子树合并的情况，即无法继续向上扩展的情况
+            val_max = max(max_branch, root.val + max_left + max_right)
+            if val_max > sum_max：sum_max = val_max
+            
+            # 返回可衔接的情况下的最大值
+            return max_branch
+        
+        _rec(root)
+        
+        return sum_max
+```
+
+# 114. Flatten Binary Tree to Linked List
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        
+        if not root: return None
+        
+        def _rec(root: Optional[TreeNode]) -> Optional[TreeNode]:
+            
+            end_left = end_right = root
+            
+            if root.left:
+                end_left = _rec(root.left)
+                end_right = end_left
+            
+            if root.right: end_right = _rec(root.right)
+            
+            if root.left:
+                end_left.right = root.right
+                root.right = root.left
+                root.left = None
+            
+            return end_right
+        
+        _rec(root)
+```
+
