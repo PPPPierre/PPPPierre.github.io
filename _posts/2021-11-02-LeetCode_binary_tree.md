@@ -453,3 +453,103 @@ class Solution:
         _rec(root)
 ```
 
+# 116. Populating Next Right Pointers in Each Node
+
+这一题可以和前面某题结合起来讨论在二叉树问题中临时存储变量的需求。
+
+```python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+"""
+
+class Solution:
+    def connect(self, root: 'Node') -> 'Node':
+        
+        node_list = []
+        
+        def _rec(root: 'Node', lv:int):
+            
+            if not root: return
+            
+            nonlocal node_list
+            
+            if len(node_list) <= lv:
+                node_list.append(root)
+            else:
+                node_list[lv].next = root
+                node_list[lv] = root
+            
+            _rec(root.left, lv + 1)
+            _rec(root.right, lv + 1)
+        
+        _rec(root, 0)
+        for node in node_list:
+            node.next = None
+        return root
+```
+
+# 129. Sum Root to Leaf Numbers
+
+# 236. Lowest Common Ancestor of a Binary Tree
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        
+        self.val_q = q.val
+        self.val_p = p.val
+        self.ans = None
+        self.post_order(root)
+        
+        return self.ans
+        
+    def post_order(self, root: 'TreeNode') -> bool:
+
+        if not root: return False
+
+        is_cur_node = root.val == self.val_q or root.val == self.val_p
+        
+        left_found = self.post_order(root.left)
+
+        right_found = self.post_order(root.right)
+
+        if is_cur_node and (left_found or right_found):
+            self.ans = root
+            return False
+        
+        if left_found and right_found:
+            self.ans = root
+            return False
+
+        return is_cur_node or left_found or right_found
+```
+
+# 297. Serialize and Deserialize Binary Tree
+
+# 331. Verify Preorder Serialization of a Binary Tree
+
+```python
+class Solution(object):
+    def isValidSerialization(self, preorder):
+        slot = 1
+        
+        for c in preorder.split(','):
+            slot -= 1 #each elemet consumes a slot
+            if slot<0: return False
+            if c!='#': slot += 2 #each non-null node also create 2 slot
+            
+        return slot==0 #all slots should be fill
+```
