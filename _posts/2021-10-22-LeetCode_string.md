@@ -1,5 +1,5 @@
 ---
-title: 【LeetCode】 LeetCode 刷题记录 - String
+title: LeetCode 刷题记录 - String
 author: Stone SHI
 date: 2021-10-18 3:40:00 +0200
 categories: [Blogging, LeetCode]
@@ -47,3 +47,6 @@ class Solution:
         backtrack(0,0)
         return res
 ```
+
+# 1044. Longest Duplicate Substring
+二分法加滚动哈希

@@ -91,3 +91,130 @@ class Solution:
                     jump[j] = jump[i] + 1
             i += 1
 ```
+
+# 55. Jump Game
+子问题：每个 index 是否是可以到达的
+状态转移方程：每个 index + 自身的 jump 数量决定了该 index 往后 jump 数量的 index 的可否到达属性。
+重复子问题：每个 index 的可否到达属性被重复计算
+
+```python
+class Solution:
+    def canJump(self, nums: List[int]) -> bool:
+        
+        result = [False] * len(nums)
+        result[0] = True
+        
+        cur_index = 0
+        max_reach = 0
+        
+        while cur_index < len(nums) and result[cur_index]:
+            
+            cur_reach = cur_index + nums[cur_index] + 1
+            if cur_reach >= len(nums): return True
+            if cur_reach > max_reach:
+                for i in range(max_reach, cur_reach):
+                    result[i] = True
+            max_reach = cur_reach
+            
+            cur_index += 1
+                
+        return False
+```
+
+# 62. Unique Paths
+
+子问题：到达每一个位置的路径数量
+状态转移方程：每一个位置的路径数量等于其上边位置和左边位置的路径数量的和。
+重复子问题：无
+
+```python
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        
+        result = [[0]*n]*m
+        result[0][0] = 1
+        
+        for i in range(m):
+            result[i][0] = 1
+        
+        for j in range(n):
+            result[0][j] = 1
+        
+        for i in range(1, m):
+            for j in range(1, n):
+                result[i][j] = result[i-1][j] + result[i][j-1]
+                
+        return result[-1][-1]
+```
+
+# 63. Unique Paths II
+
+# 64. Minimum Path Sum
+
+# 72. Edit Distance
+
+关于思路，这篇[编辑距离](https://github.com/labuladong/fucking-algorithm/blob/master/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%B3%BB%E5%88%97/%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.md)文章已经讲的很清楚了，下面直接整理几个关键。
+
+## a. 子问题
+
+假设子字符串 `word1[:i]`, `word2[:j]`之间的最短编辑距离记为 `DP(i, j)`。那么求出所有 `i`, `j` 对应的 `DP(i, j)` 则构成子问题的集合。
+
+## b. 状态转移方程的确定：
+
+`DP(i, j)` 可以从 `DP(i-1, j)`, `DP(i, j-1)` 和 `DP(i-1, j-1)` 三个子问题的答案推出。
+
+但是需要根据  `word1[i]` 和 `word2[j]` 的关系来进行分类讨论：
+
+如果 `word1[i] == word2[j]`，因为对应字母相同，不需要任何操作。
+
+对应代码为：
+
+```python
+DP[i][j] = DP(i-1, j-1)
+```
+
+如果 `word1[i] != word2[j]`，则对应字母不同，则需要进行操作，三个操作前状态分别对应三个操作：
+
+`DP(i-1, j) -> DP(i, j)` 对应已知从 `word1[:i-1]` 转换到 `word2[:j]` 的最小编辑距离再加上从 `word1[:i]` 到 `word1[:i-1]` 的一步删除操作
+
+`DP(i, j-1) -> DP(i, j)` 对应已知从 `word1[:i]` 转换到 `word2[:j-1]` 的最小编辑距离再加上从 `word2[:j-1]` 到 `word2[:j]` 的一步插入操作
+
+`DP(i-1, j-1) -> DP(i, j)` 对应已知从 `word1[:i-1]` 转换到 `word2[:j-1]` 的最小编辑距离再加上从 `word1[:i]` 转换到 `word2[:j]` 最后一位的替换操作
+
+最后取这三种操作中编辑距离最下的情况，代码则是：
+
+```python
+DP[i][j] = min(res[i - 1][j], res[i][j - 1], res[i-1][j-1]) + 1
+```
+
+总体代码如下：
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        
+        m = len(word1)+1
+        n = len(word2)+1
+        
+        res = [[0]*n for i in range(m)]
+        
+        # 初始化 DP table
+        res[0][0] = 0
+        for i in range(1, m):
+            res[i][0] = i
+        for j in range(1, n):
+            res[0][j] = j
+            
+        for i in range(1, m):
+            for j in range(1, n):
+
+                # 状态转移方程
+                if word1[i-1] == word2[j-1]:
+                    res[i][j] = res[i-1][j-1]
+                else:
+                    res[i][j] = min(res[i - 1][j], 
+                                    res[i][j - 1], 
+                                    res[i-1][j-1]) + 1
+                    
+        return res[m-1][n-1]
+```

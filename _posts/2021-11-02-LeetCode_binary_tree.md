@@ -539,6 +539,10 @@ class Solution:
 
 # 297. Serialize and Deserialize Binary Tree
 
+将节点一一编上序号，然后再得到前序遍历和中序遍历的序号 List，以及前序遍历的 val 的 List。
+之后根据前序遍历和中序遍历的序号 List 还原二叉树结构，然后按照前序遍历的顺序把 val 的值一个一个填进去即可。
+tip. 编号是为了防止出现因为 Node 值重复从而导致无法还原树结构的情况。
+
 # 331. Verify Preorder Serialization of a Binary Tree
 
 ```python
@@ -553,3 +557,218 @@ class Solution(object):
             
         return slot==0 #all slots should be fill
 ```
+
+# 337. House Robber III
+
+个人目前的主要问题是对问题本身的思考不够准确和清晰，导致最终写出来的代码是符合脑子所想的解决方案，但是脑子里的解决方案本身却有问题。
+
+如果把解题的逻辑归纳如下：
+
+题目 -> 解决方案（脑子） -> 代码
+
+目前从第一步到第二步的过程还需要锻炼。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def rob(self, root: Optional[TreeNode]) -> int:
+        
+        def _rec(root):
+            
+            if not root: return 0, 0
+                
+            max_left_theif,  max_left_no_theif = _rec(root.left)
+            max_right_theif,  max_right_no_theif = _rec(root.right)
+            
+            max_theif = root.val + max_left_no_theif + max_right_no_theif
+            max_no_theif = 0 + max(max_left_no_theif, max_left_theif) + max(max_right_no_theif, max_right_theif)
+            
+            return max_theif, max_no_theif
+                
+        return max(_rec(root))
+```
+
+# 437. Path Sum III
+
+我在这一题用了两个递归函数来进行两重遍历，时间复杂度为`O(N^2)`。
+
+但是实际上只需要一次遍历即可，需要牺牲一点空间复杂度来存储路径结果，但是时间复杂度只需要`O(N)`。
+
+首先题目中需要寻找的目标路径有两种：从根开始到当前节点的完整路径和不从根开始的不完整路径，
+
+我们需要获得每一条符合要求的路径的加和信息，才能计算出总的满足条件的路径的数量。
+
+参考讨论里一个大神的 Back tracking 解决方案， 他给遍历路径信息提供了一个很好的思路：
+
+首先构造一个递归函数来遍历树中的每一个节点。
+
+当我们遍历到某一节点时，我们将它当前完整路径上所有节点的加和以出现次数的形式存储在一个`mapping`字典里，也就是加 1。
+
+那么当我们从根遍历到该节点的时候，`mapping`里就存储了从根到这个路径上每一个节点的历史加和和对应的出现次数。
+
+最关键的就是接下来这一想法：当前的完整路径加和与`mapping`里存储的历史加和的差值就是以该历史加和对应的中间节点为起点，到当前节点的不完整路径的加和。
+
+于是，以当前路径为起始点，向着根方向的所有包含当前节点的路径对应的加和信息都存储在`mapping`里，包含完整路径，因为 0 也在字典中。
+
+而函数通过遍历每一个点，从而可以不重复地判断所有的路径加和信息。
+
+在递归调用完左子树和右子树之后，回溯到上一个节点的状态，从字典中将当前的完整路径和的出现次数减 1 即可。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def pathSum(self, root: TreeNode, sum: int) -> int:
+        ans = [0]
+        
+        def dfs(node, curr_sum):
+            if not node: return
+
+            # 判断当前节点往根方向是否存在满足条件的路径和
+            # 并将该路径和对应的路径数累加到结果上
+            curr_sum += node.val
+            if (curr_sum - sum) in mapping:
+                ans[0] += mapping[curr_sum - sum]
+
+            # 将当前完整路径的和存储在字典内
+            mapping[curr_sum] += 1
+
+            # 递归调用
+            dfs(node.left, curr_sum)
+            dfs(node.right, curr_sum)
+
+            # 回溯
+            mapping[curr_sum] -= 1
+            
+        mapping = defaultdict(int)
+        mapping[0] = 1
+        dfs(root, 0)
+        return ans[0]
+```
+
+# 508. Most Frequent Subtree Sum
+
+和 easy 题 501. Find Mode in Binary Search Tree 一个思路。
+
+利用 mapping 来存储 occurrence 信息，再判断频数最高的数据。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def findFrequentTreeSum(self, root: Optional[TreeNode]) -> List[int]:
+        
+        sub_tree_sum_mapping = defaultdict(int)
+        res_sum = []
+        most_occurrence = 0
+        
+        def _rec(root):
+            
+            if not root: return 0
+            
+            nonlocal most_occurrence
+            
+            left_sum = _rec(root.left)
+            right_sum = _rec(root.right)
+            
+            cur_sum = root.val + left_sum + right_sum
+            sub_tree_sum_mapping[cur_sum] += 1
+            if sub_tree_sum_mapping[cur_sum] > most_occurrence:
+                res_sum.clear()
+                res_sum.append(cur_sum)
+                most_occurrence = sub_tree_sum_mapping[cur_sum]
+            elif sub_tree_sum_mapping[cur_sum] == most_occurrence:
+                res_sum.append(cur_sum)
+            
+            return cur_sum
+                
+        _rec(root)
+        return res_sum
+```
+
+# 513. Find Bottom Left Tree Value
+
+# 515. Find Largest Value in Each Tree Row
+
+和上一题一样的思路，熟练掌握节点深度信息的顺向传递即可。
+
+# 538. Convert BST to Greater Tree
+
+# 623. Add One Row to Tree
+
+# 652. Find Duplicate Subtrees
+
+对子树的和进行哈希来减少判断次数，然后使用遍历来判断是否是重复子树。
+
+# 653. Two Sum IV - Input is a BST
+
+BFS 广度优先搜索，使用双向队列来实现队列作为辅助结构
+
+```python
+class Solution:
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        deque=collections.deque([root])
+        s=set()
+        while deque:
+            node=deque.popleft()
+            if k-node.val in s: return True
+            s.add(node.val)
+            if node.left: deque.append(node.left)
+            if node.right: deque.append(node.right)
+        return False
+```
+
+DFS 同样用双向队列实现栈作为辅助结构
+
+```python
+class Solution:
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        deque=collections.deque([root])
+        s=set()
+        while deque:
+            node=deque.pop()
+            if k-node.val in s: return True
+            s.add(node.val)
+            if node.right: deque.append(node.right)
+            if node.left: deque.append(node.left)
+        return False
+```
+
+# 654. Maximum Binary Tree
+
+# 655. Print Binary Tree
+
+# 662. Maximum Width of Binary Tree
+
+# 669. Trim a Binary Search Tree
+
+# 687. Longest Univalue Path
+
+# 671. Second Minimum Node In a Binary Tree
+
+简单题，但是广度优先搜索比递归要快得多。因为 DFS 更方便提前终止程序。
+
+# 701. Insert into a Binary Search Tree
+
+按照 BST 的性质搜索，将目标节点作为叶节点插入在最后即可。
+
+# 865. Smallest Subtree with all the Deepest Nodes
+
+# 814. Binary Tree Pruning
+
+# 863. All Nodes Distance K in Binary Tree
