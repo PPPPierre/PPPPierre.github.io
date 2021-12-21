@@ -1,5 +1,5 @@
 ---
-title: 【Linux 环境搭建】在 Win10 上搭建 wsl2 虚拟 Linux 环境
+title: Linux 环境搭建 - 在 Win10 上搭建 wsl2 虚拟 Linux 环境
 author: Stone SHI
 date: 2021-09-27 09:00:00 +0200
 categories: [Blogging, System]

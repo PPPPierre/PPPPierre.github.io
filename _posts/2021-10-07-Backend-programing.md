@@ -1,5 +1,5 @@
 ---
-title: 【专业课】基于 Python 的后端开发
+title: 专业课 - 基于 Python 的后端开发
 author: Stone SHI
 date: 2021-10-07 14:18:00 +0200
 categories: [Blogging, Study]

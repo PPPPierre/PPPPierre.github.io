@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 编译课项目二 - 基于 Jflex 词法分析器和 Cup 句法解析器实现编译器前端
+title: 专业课 - 编译课项目二 - 基于 Jflex 词法分析器和 Cup 句法解析器实现编译器前端
 author: Stone SHI
 date: 2021-09-27 14:16:00 +0200
 categories: [Blogging, Study]

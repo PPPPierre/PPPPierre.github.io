@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 基于并行计算的代码优化
+title: 专业课 - 基于并行计算的代码优化
 author: Stone SHI
 date: 2021-10-11 15:14:00 +0200
 categories: [Blogging, Study]

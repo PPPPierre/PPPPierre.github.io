@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 系统编程项目二 - 使用 C 语言编写一个 Linux 的 Mini shell
+title: 专业课 - 系统编程项目二 - 使用 C 语言编写一个 Linux 的 Mini shell
 author: Stone SHI
 date: 2021-09-22 22:58:00 +0200
 categories: [Blogging, Study]

@@ -1,5 +1,5 @@
 ---
-title: 【GIT】 使用 Git 进行团队开发
+title: GIT - 使用 Git 进行团队开发
 author: Stone SHI
 date: 2021-10-11 15:14:00 +0200
 categories: [Blogging, Study]

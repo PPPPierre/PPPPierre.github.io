@@ -1,5 +1,5 @@
 ---
-title: 【数据库】 全面理解 Database 数据库
+title: 数据库 - 全面理解 Database 数据库
 author: Stone SHI
 date: 2021-10-07 14:18:00 +0200
 categories: [Blogging, Study]

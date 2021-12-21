@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 编译课项目一 - 基于 Jflex 词法分析器和 Cup 句法解析器的算术表达式计算器
+title: 专业课 - 编译课项目一 - 基于 Jflex 词法分析器和 Cup 句法解析器的算术表达式计算器
 author: Stone SHI
 date: 2021-09-27 14:16:00 +0200
 categories: [Blogging, Study]

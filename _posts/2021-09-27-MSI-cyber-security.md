@@ -1,5 +1,5 @@
 ---
-title: 【专业课】 信息安全 - 在 ROOT ME 平台上挑战信息安全项目
+title: 专业课 - 信息安全 - 在 ROOT ME 平台上挑战信息安全项目
 author: Stone SHI
 date: 2021-09-28 09:23:00 +0200
 categories: [Blogging, Study]

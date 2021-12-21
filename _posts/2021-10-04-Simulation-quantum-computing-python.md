@@ -1,5 +1,5 @@
 ---
-title: 【专业课】使用 Python 模拟量子计算电路
+title: 专业课 - 使用 Python 模拟量子计算电路
 author: Stone SHI
 date: 2021-10-04 10:15:00 +0200
 categories: [Blogging, Study]

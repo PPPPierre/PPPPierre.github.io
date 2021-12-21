@@ -218,3 +218,148 @@ class Solution:
                     
         return res[m-1][n-1]
 ```
+
+# 84. Largest Rectangle in Histogram
+
+关键结构：单调栈
+
+[Leetcode 84：柱状图中最大的矩形（超详细的解法！！！）](https://blog.csdn.net/qq_17550379/article/details/85093224)
+
+```python
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        
+        # 递增栈
+        n = len(heights)
+        mono_stack = []
+        max_area, i = 0 ,0
+        
+        while i < n:
+            if not mono_stack or heights[i] >= heights[mono_stack[-1]]:
+                mono_stack.append(i)
+                i += 1
+            else:
+                j = mono_stack.pop()
+                max_area = max(max_area, (i - mono_stack[-1] - 1 if mono_stack else i)*heights[j])
+            
+        while mono_stack:
+            j = mono_stack.pop()
+            max_area = max(max_area, (i - mono_stack[-1] - 1 if mono_stack else i)*heights[j])
+            
+        return max_area
+```
+
+# 85. Maximal Rectangle
+
+该问题可以按照行为单位拆解为若干子问题，第`i`行对应的子问题是求解一道以`matrix[i][:]`这一行为底，以`i+1`为最大柱子高度的 84 题。
+
+创建 dp table 以构建每一个子问题的输入，可以得出`dp[i][j]`就是从`dp[0][j]`一直到`dp[i][j]`累计的柱子长度。
+
+然后按照 84 题的构建单调栈的思路来解决每一个子问题即可。
+
+```python
+class Solution:
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        
+        rows, cols = len(matrix), len(matrix[0])
+        # initial dp table
+        dp = [[0] * cols for i in range(rows)]
+        # Initial mono-stack
+        monostack = list()
+        res = 0
+        
+        for i in range(rows):
+            for j in range(cols):
+                
+                # 状态转移方程
+                if matrix[i][j] == '1':
+                    dp[i][j] = dp[i-1][j] + 1 if i > 0 else 1
+                else:
+                    dp[i][j] = 0
+                
+                # 按照 84 题思路，逐个处理“柱子高度”
+                while(monostack and dp[i][monostack[-1]] > dp[i][j]):
+                    k = monostack.pop()
+                    res = max(res, dp[i][k] * (j - monostack[-1] - 1 if monostack else j))
+                monostack.append(j)
+            
+            # 逐个弹出单调栈中剩余的“柱子高度”并计算最大面积
+            while(monostack):
+                k = monostack.pop()
+                res = max(res, dp[i][k] * (cols - monostack[-1] - 1 if monostack else cols))
+
+        return res
+            
+```
+# 300. Longest Increasing Subsequence (LIS)
+
+方法一：DP
+
+在这里，如何定义 DP 表内元素的意义是关键。
+
+定义 DP 表内元素的意义 = 定义子问题
+
+如何定义子问题很重要，子问题的定义如同桥梁，需要照顾两个方面：
+
+1. 要足够具体（易于实现），保证可以快速找到状态转移方程；
+
+2. 要足够贴近全局问题，使得从所有子问题的解中可以快速推导出全局问题的解。
+
+以该题为例，将`DP[i]`定义为**以第 i 个元素为结尾的 LIS 的长度。**
+
+那么状态转移方程就可以通过第 i 位与 从 0 到 i-1 位的大小关系来得到：
+
+$DP[i] = Max_{0 <= k <= i-1, N[k] < N[i]}(DP[k]) + 1$
+
+而全局问题的解就是 DP 表里所有子问题的最大值。
+
+该解法的时间复杂度为 $O(N^2)$。
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        dp = [0]*n
+        dp[0] = 1
+        
+        for i in range(1,n):
+            lis = 1
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    lis = max(lis, dp[j] + 1)
+            dp[i] = lis
+            
+        return max(dp)
+```
+
+方法二：二分法
+
+需要数学证明的方法。通过数学证明，找到了一个与解决该问题等价的操作方法，来源于一种扑克牌游戏。
+
+在该方法中通过应用二分法可以进一步将时间复杂度压缩到 $O(Nlog(N))$。具体请移步参考链接。
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        deck = [nums[0]]
+        
+        for k in range(1,n):
+            if nums[k] > deck[-1]:
+                deck.append(nums[k])
+            else:
+                i = 0
+                j = len(deck) - 1
+                while (j > i):
+                    middle = int((i + j)/2)
+                    if deck[middle] < nums[k]:
+                        i = middle + 1
+                    else:
+                        j = middle
+                deck[i] = nums[k]
+                
+        return len(deck)
+```
+
+参考链接：
+[动态规划设计：最长递增子序列](https://github.com/labuladong/fucking-algorithm/blob/master/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%B3%BB%E5%88%97/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%AE%BE%E8%AE%A1%EF%BC%9A%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.md)
