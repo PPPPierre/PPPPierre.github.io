@@ -309,7 +309,7 @@ class Solution:
 
 那么状态转移方程就可以通过第 i 位与 从 0 到 i-1 位的大小关系来得到：
 
-$DP[i] = Max_{0 <= k <= i-1, N[k] < N[i]}(DP[k]) + 1$
+$DP[i] = Max_{0 \leq k \leq i-1, N_k < N_i}(DP[k]) + 1$
 
 而全局问题的解就是 DP 表里所有子问题的最大值。
 
@@ -362,4 +362,437 @@ class Solution:
 ```
 
 参考链接：
-[动态规划设计：最长递增子序列](https://github.com/labuladong/fucking-algorithm/blob/master/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%B3%BB%E5%88%97/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E8%AE%BE%E8%AE%A1%EF%BC%9A%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.md)
+[动态规划设计：最长递增子序列](https://labuladong.gitee.io/algo/3/24/74/)
+
+# 87. Scramble String
+
+借助递归进行穷举，存储中间计算过程减少重复计算。
+
+```python
+class Solution:
+    def isScramble(self, s1: str, s2: str) -> bool:
+        n = len(s1)
+        
+        memo = dict()
+        
+        def dp(i1, j1, i2, j2):
+            if (i1, j1, i2, j2) in memo: return memo[(i1, j1, i2, j2)]
+            if j1 == i1: 
+                memo[(i1, j1, i2, j2)] = s1[i1] == s2[i2]
+                return memo[(i1, j1, i2, j2)]
+            res = False
+            for k in range(j1 - i1):
+                res = res or (dp(i1, i1+k, i2, i2+k) and dp(i1+k+1, j1, i2+k+1, j2)) \
+                        or (dp(i1, i1+k, j2-k, j2) and dp(i1+k+1, j1, i2, j2-k-1))
+            memo[(i1, j1, i2, j2)] = res
+            return memo[(i1, j1, i2, j2)]
+        
+        return dp(0, n-1, 0, n-1)
+```
+
+# 87. Super Egg Drop
+
+在这道题里，决定问题状态的有两个变量：楼层数，鸡蛋数。
+
+因此将 DP 数组定义为：`DP[i][j]` 表示**在鸡蛋数量为 j 时确定 i 层所需要的最少操作数**。
+
+在状态转移时进行二分查找选择最优操作，可惜时间要求达不到。
+
+```python
+class Solution:
+    def superEggDrop(self, k: int, n: int) -> int:
+        
+        # 初始化
+        dp = [[0]*k for i in range(n+1)]
+        for i in range(n+1):
+            dp[i][0] = i
+        for j in range(k):
+            dp[0][j] = 0
+        
+        # 状态转移方程
+        for i in range(1, n+1):
+            for j in range(1, k):
+                dp[i][j] = i
+                left = 1
+                right = i
+                
+                # # 遍历方法，复杂度O(k*n*n)
+                # for l in range(1, i+1):
+                #     dp[i][j] = min(dp[i][j], max(dp[l-1][j-1], dp[i-l][j]) + 1)
+                
+                # 二分查找法，复杂度O(k*n*log(n))
+                while left <= right:
+                    mid = (left + right) // 2
+                    broken = dp[mid-1][j-1] + 1
+                    not_broken = dp[i-mid][j] + 1
+                    if broken > not_broken:
+                        right = mid - 1
+                        dp[i][j] = min(dp[i][j], broken)
+                    else:
+                        left = mid + 1
+                        dp[i][j] = min(dp[i][j], not_broken)
+                
+        return dp[n][k-1]
+```
+
+更改 DP 数组定义：
+
+`DP[i][j]` 表示**在鸡蛋数量为 i， 操作数限制为 j 时能确定的最大楼层数**
+
+此时在确定状态转移方程式就不需要再遍历寻找最优操作了。满足题目的时间要求。
+
+```python
+class Solution:
+    def superEggDrop(self, k: int, n: int) -> int:
+        dp = [[0]*(n+1) for i in range(k+1)]
+        # i: 鸡蛋总数，j: 允许测试次数
+        # dp[i][j]: 能够测得的最大楼层数
+        
+        for i in range(k+1):
+            dp[i][0] = 0
+        for m in range(n+1):
+            dp[0][m] = 0
+            
+        m = 0
+        while dp[k][m] < n:
+            m += 1
+            for i in range(1, k+1):
+                dp[i][m] = dp[i][m-1] + dp[i-1][m-1] + 1
+        
+        return m
+```
+
+参考链接：
+
+[经典动态规划：高楼扔鸡蛋](https://labuladong.gitee.io/algo/3/26/89/)
+
+[经典动态规划：高楼扔鸡蛋（进阶）](https://labuladong.gitee.io/algo/3/26/90/)
+
+# 1143. Longest Common Subsequence
+
+比较传统的解法，在逐个元素比对的时候，要考虑清楚状态的转移过程。
+
+```python
+class Solution:
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        
+        n1, n2 = len(text1), len(text2)
+        
+        # 初始化 DP 数组，确定初始状态
+        dp = [[0]*n2 for i in range(n1)]
+        for i in range(n1):
+            if text1[i] == text2[0]: 
+                dp[i][0] = 1
+            else:
+                dp[i][0] = dp[i-1][0]
+        for j in range(n2):
+            if text2[j] == text1[0]: 
+                dp[0][j] = 1
+            else:
+                dp[0][j] = dp[0][j-1]
+                
+        # dp[i][j]: text1[:i] 与 text2[:j] 的最长公共子序列
+                
+        # 状态转移
+        for i in range(1, n1):
+            for j in range(1, n2):
+                if text1[i] == text2[j]:
+                    dp[i][j] = dp[i-1][j-1] + 1
+                else:
+                    dp[i][j] = max(dp[i][j-1], dp[i-1][j])
+        
+        return dp[-1][-1]
+```
+
+参考链接：
+
+[最长公共子序列](https://github.com/labuladong/fucking-algorithm/blob/master/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%B3%BB%E5%88%97/%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E5%BA%8F%E5%88%97.md)
+
+[经典动态规划：最长公共子序列](https://labuladong.gitee.io/algo/3/24/77/)
+
+# 583. Delete Operation for Two Strings
+
+思路同上
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        
+        # 初始化 dp 数组
+        n1, n2 = len(word1), len(word2)
+        dp = [[0]*(n2+1) for i in range(n1+1)]
+        for i in range(1, n1+1):
+            dp[i][0] = dp[i-1][0] + 1
+        for j in range(1, n2+1):
+            dp[0][j] = dp[0][j-1] + 1
+            
+        # dp[i][j]: word1[:i] 与 word2[:j] 的最小操作数
+        
+        # 状态转移
+        for i in range(1, n1+1):
+            for j in range(1, n2+1):
+                if word1[i-1] == word2[j-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + 1
+                    
+        return dp[-1][-1]
+```
+
+# 712. Minimum ASCII Delete Sum for Two Strings
+
+思路同上
+
+```python
+class Solution:
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        
+        # 初始化dp数组
+        n1, n2 = len(s1), len(s2)
+        dp = [[0]*(n2+1) for i in range(n1+1)]
+        for i in range(1, n1+1):
+            dp[i][0] = dp[i-1][0] + ord(s1[i-1])
+        for j in range(1, n2+1):
+            dp[0][j] = dp[0][j-1] + ord(s2[j-1])
+        
+        # dp[i][j]: s1[:i] 和 s2[:j] 的最小删除和
+        
+        # 状态转移
+        for i in range(1, n1+1):
+            for j in range(1, n2+1):
+                if s1[i-1] == s2[j-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    dp[i][j] = min(dp[i][j-1] + ord(s2[j-1]), dp[i-1][j] + ord(s1[i-1]))
+        
+        return dp[-1][-1]
+```
+
+# 516. Longest Palindromic Subsequence
+
+使用二维 DP 来定义子问题：`DP[i][j]` 表示 `s[i..j]` 的最长回文子序列长度。
+
+主要不同点就在于这是一个斜向初始化和遍历的 DP 数组。
+
+```python
+class Solution:
+    def longestPalindromeSubseq(self, s: str) -> int:
+        
+        # 初始化DP数组
+        n = len(s)
+        dp = [[0]*n for i in range(n)]
+        for i in range(n):
+            dp[i][i] = 1
+            
+        # DP[i][j]: s[i..j] 的最长回文子序列长度
+        
+        # 状态转移（斜向遍历）
+        for l in range(1, n):
+            for i in range(n-l):
+                j = l + i
+                if s[i] == s[j]:
+                    dp[i][j] = dp[i+1][j-1] + 2
+                else:
+                    dp[i][j] = max(dp[i][j-1], dp[i+1][j])
+        
+        return dp[0][n-1]
+```
+
+斜向遍历的坏处就是无法把二维 DP 数组压缩到一维，所以我们从下往上（i 逆序），从左往右（j 正序）的顺序遍历。
+
+通过借助 `pre`, `temp` 等中间变量，将二维的 DP 数组压缩到一维。可以节省更多的空间复杂度。
+
+```python
+class Solution:
+    def longestPalindromeSubseq(self, s: str) -> int:
+        
+        # 初始化DP数组，把状态压缩到一维
+        n = len(s)
+        dp = [1]*n 
+            
+        # DP[j]: s[i..j] 的最长回文子序列长度
+        
+        # 状态转移（按行逆序遍历）
+        for i in range(n-2, -1, -1):
+            pre = 0
+            for j in range(i+1,n):
+                temp = dp[j]
+                if s[i] == s[j]:
+                    dp[j] = pre + 2
+                else:
+                    dp[j] = max(dp[j-1], dp[j])
+                pre = temp
+        
+        return dp[n-1]
+```
+
+# 931. Minimum Falling Path Sum
+
+推荐 DP 数组解法。
+
+```python
+class Solution:
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        
+        # 初始化DP数组
+        n = len(matrix)
+        dp = [[0]*n for i in range(n)]
+        for j in range(n):
+            dp[0][j] = matrix[0][j]
+        
+        # dp[i][j] 落到 matrix[i][j] 位置时的最小路径和
+        
+        # 状态转移
+        for i in range(1, n):
+            for j in range(n):
+                if j == 0:
+                    min_pre = min(dp[i-1][j], dp[i-1][j+1])
+                elif j == n-1:
+                    min_pre = min(dp[i-1][j-1], dp[i-1][j])
+                else:
+                    min_pre = min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1])
+                dp[i][j] = min_pre + matrix[i][j]
+                
+        return min(dp[-1])
+```
+
+递归 + 备忘录版本，要比 DP 数组慢很多。
+
+```python
+class Solution:
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        
+        n = len(matrix)
+        memo = [[10001]*n for i in range(n)]
+        
+        def dp(i, j):
+            if j < 0 or j >= n:
+                return 10002
+            if i == 0:
+                return matrix[0][j]
+            if memo[i][j] != 10001:
+                return memo[i][j]
+            memo[i][j] = min(dp(i-1, j-1), dp(i-1, j), dp(i-1, j+1)) + matrix[i][j]
+            return memo[i][j]
+            
+        res = 10001
+        for j in range(n):
+            res = min(res, dp(n-1,j))
+        
+        return res
+```
+
+# 416. Partition Equal Subset Sum
+
+按照 0-1 背包问题，定义 DP 数组：`dp[i][j]` 当背包容量剩余 j 时，前 i 个物品能否刚好装满背包。数组元素为 `True` 或 `False`
+
+```python
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        
+        total = sum(nums)
+        if total % 2 != 0: return False
+        
+        target = int(total / 2)
+        n = len(nums)
+        
+        # 初始化DP数组
+        dp = [[False] * (target+1) for i in range(n)]
+        for i in range(n):
+            dp[i][0] = True
+        for j in range(1, target+1):
+            if nums[0] == j:
+                dp[0][j] = True
+        
+        # dp[i][j] 当背包容量剩余 j 时，前 i 个物品能否刚好装满背包
+        
+        # 状态转移
+        for i in range(1, n):
+            for j in range(1, target+1):
+                if nums[i] > j:
+                    dp[i][j] = dp[i-1][j]
+                else:
+                    dp[i][j] = dp[i-1][j-nums[i]] or dp[i-1][j]
+        
+        return dp[-1][-1]
+```
+
+根据数组的特性，可以进行状态压缩。
+
+只是需要注意遍历顺序，j 需要逆序遍历，否则上一个 i-1 的状态会被覆盖掉
+
+```python
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        
+        total = sum(nums)
+        if total % 2 != 0: return False
+        
+        target = int(total / 2)
+        n = len(nums)
+        
+        # 初始化DP数组
+        dp = [False] * (target+1)
+        dp[0] = True
+        for j in range(1, target+1):
+            if nums[0] == j:
+                dp[j] = True
+        
+        # dp[i][j] 当背包容量剩余 j 时，前 i 个物品能否刚好装满背包
+        
+        # 状态转移（i 正序，j 逆序遍历）
+        for i in range(1, n):
+            for j in range(target, 0, -1):
+                if nums[i] <= j:
+                    dp[j] = dp[j-nums[i]] or dp[j]
+        
+        return dp[-1]
+```
+
+# 494. Target Sum
+
+这个问题可以转化为背包问题中的子集分割问题，根据题目中元素前的符号我们可以将元素分成两个集合，假设 N 为总集合，A 为“加”集合，B 为“减”集合，T 为目标和，那么则有
+
+$ Sum(A) - Sum(B) = T $
+
+进而可以推出（省略一点中间步骤）
+
+$ Sum(A) = (T + Sum(N))/2 $
+
+至此，问题被转化为：
+
+**从集合 N 中选出元素组合成集合 A 满足 A 的元素和为 $(T + Sum(N))/2$，请问一共有多少种选法？**
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        
+        # 判断特殊情况
+        s = sum(nums)
+        if s < abs(target) or (s + target) % 2 == 1:
+            return 0
+        
+        # DP方法
+
+        # 初始化DP数组
+        n = len(nums)
+        dp_target = (s + target) // 2 # 转换成子集分割问题时对应的目标和
+        dp = [[0] * (dp_target + 1) for i in range(n)]
+
+        # dp[i][j]: 前 i 个元素能构成满足和为 j 的子集合数
+
+        # 初始状态
+        dp[0][0] += 1
+        if nums[0] <= dp_target:
+            dp[0][nums[0]] += 1
+        
+        # 状态转移
+        for i in range(1, n):
+            for j in range(dp_target, -1, -1):
+                if nums[i] > j:
+                    dp[i][j] = dp[i-1][j]
+                else:
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j - nums[i]]
+        
+        return dp[-1][-1]
+```
