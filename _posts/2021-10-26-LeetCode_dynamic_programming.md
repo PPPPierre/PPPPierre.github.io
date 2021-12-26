@@ -153,7 +153,7 @@ class Solution:
 
 # 72. Edit Distance
 
-关于思路，这篇[编辑距离](https://github.com/labuladong/fucking-algorithm/blob/master/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%B3%BB%E5%88%97/%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.md)文章已经讲的很清楚了，下面直接整理几个关键。
+关于思路，这篇[编辑距离](https://labuladong.gitee.io/algo/3/24/73/)文章已经讲的很清楚了，下面直接整理几个关键。
 
 ## a. 子问题
 
@@ -291,9 +291,9 @@ class Solution:
         return res
             
 ```
-# 300. Longest Increasing Subsequence (LIS)
+# 300. Longest Increasing Subsequence (LIS) {#problem300}
 
-方法一：DP
+一、动态规划
 
 在这里，如何定义 DP 表内元素的意义是关键。
 
@@ -332,7 +332,7 @@ class Solution:
         return max(dp)
 ```
 
-方法二：二分法
+二、二分法
 
 需要数学证明的方法。通过数学证明，找到了一个与解决该问题等价的操作方法，来源于一种扑克牌游戏。
 
@@ -751,7 +751,52 @@ class Solution:
 
 # 494. Target Sum
 
-这个问题可以转化为背包问题中的子集分割问题，根据题目中元素前的符号我们可以将元素分成两个集合，假设 N 为总集合，A 为“加”集合，B 为“减”集合，T 为目标和，那么则有
+参考链接：
+[动态规划和回溯算法到底谁是谁爹？](https://labuladong.gitee.io/algo/3/23/71/)
+
+## 一、回溯算法
+
+回溯算法的思路比较直观了当，直接按思考顺序进行穷举，配合备忘录来减少子问题的重复计算。
+
+但是代价就是相对比较高的时间和空间复杂度。
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        
+        n = len(nums)
+        memo = dict() # 备忘录
+        
+        # backtrack(i, rest) 的意义为从第 i 个数起，能凑出和为 Target - rest 的组合数
+
+        def backtrack(i, rest):
+            
+            if (i, rest) in memo: return memo[(i, rest)]
+            
+            # 结束条件：当凑出 Target 时，返回 1；否则返回 0
+            if i == n:
+                if rest == 0:
+                    memo[(i, rest)] = 1
+                    return memo[(i, rest)]
+                else:
+                    memo[(i, rest)] = 0
+                    return memo[(i, rest)]
+            
+            # 可选操作
+            # backtrack(i + 1, rest - nums[i]): 加上 Nums[i] 之后剩余可能的组合数
+            # backtrack(i + 1, rest + nums[i]): 减去 Nums[i] 之后剩余可能的组合数
+            memo[(i, rest)] = backtrack(i + 1, rest - nums[i]) + backtrack(i + 1, rest + nums[i])
+            
+            return memo[(i, rest)]
+        
+        return backtrack(0, target)
+```
+
+## 二、动态规划 
+
+这个问题可以转化为[416.分割等和子集问题](https://leetcode-cn.com/problems/partition-equal-subset-sum/)，即本文上一题，也是背包问题中的一种。
+
+根据题目中元素前的符号我们可以将元素分成两个集合，假设 N 为总集合，A 为“加”集合，B 为“减”集合，T 为目标和，那么则有
 
 $ Sum(A) - Sum(B) = T $
 
@@ -762,6 +807,8 @@ $ Sum(A) = (T + Sum(N))/2 $
 至此，问题被转化为：
 
 **从集合 N 中选出元素组合成集合 A 满足 A 的元素和为 $(T + Sum(N))/2$，请问一共有多少种选法？**
+
+使用 DP 数组法，和子集分割问题不同的地方在于，这里的状态转移情况稍微不同，需要将“A包括i”和“A不包括i”两种情况的可能情况相加。
 
 ```python
 class Solution:
@@ -795,4 +842,305 @@ class Solution:
                     dp[i][j] = dp[i-1][j] + dp[i-1][j - nums[i]]
         
         return dp[-1][-1]
+```
+
+同样，状态可以进一步压缩以降低空间复杂度，但是一样要注意 j 要逆序遍历。
+
+```python
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        
+        s = sum(nums)
+        if s < abs(target) or (s + target) % 2 == 1:
+            return 0
+        
+        # 初始化DP数组
+        n = len(nums)
+        dp_target = (s + target) // 2 # 转换成子集分割问题时对应的子集和
+        dp = [0] * (dp_target + 1)
+        
+        dp[0] += 1
+        
+        if nums[0] <= dp_target:
+            dp[nums[0]] += 1
+        
+        # 状态转移
+        for i in range(1, n):
+            for j in range(dp_target, -1, -1):
+                if nums[i] <= j:
+                    dp[j] = dp[j] + dp[j - nums[i]]
+        
+        return dp[-1]
+```
+
+# 354. Russian Doll Envelopes
+
+参考链接：
+[二维递增子序列：信封嵌套问题](https://labuladong.gitee.io/algo/3/24/75/)
+
+面对这道题，要做的第一件事就是**排序**。
+
+因为套娃过程是一个本质上信封高度或者宽度递增的过程，但是显然题目中给出的信封宽高是没有规律的。所以如果不对信封首先进行一定程度的排序预处理，那么在对信封的遍历过程中一定会遇到对目前已有的套娃方案进行中途插入的问题。因此以后面对类似的题目，也要首先注意题目是否需要排序这一操作。
+
+而这一题的难点也就在于如何对二元数组的序列进行排序。解法如下：
+
+**将信封首先按宽度升序排序，宽度相同的时候按照高度降序排序。然后把信封所有的高度作为一个数组，然后在这个数组上计算最长递增子序列就可以得到本题答案。**
+
+实际上就是通过排序将问题转化成了最长递增子序列的问题，该问题的解法可以参考本文的[300. Longest Increasing Subsequence (LIS)](#problem300)。
+
+代码如下：
+
+```python
+class Solution:
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        
+        # 按照 width 进行升序排列，如果 width 相等，则按照 height 降序排列
+        envs_sorted = sorted(envelopes, key=lambda env: (env[0], -env[1]))
+        h_list = [env[1] for env in envs_sorted]
+        
+        # 按照最长递增子序列问题进行处理：二分的扑克牌方法
+        deck = [h_list[0]]
+        for poker in h_list[1:]:
+            if poker > deck[-1]:
+                deck.append(poker)
+            else:
+                i, j = 0, len(deck) - 1
+                while i < j:
+                    mid = (i + j)//2
+                    if poker > deck[mid]:
+                        i = mid + 1
+                    else:
+                        j = mid
+                deck[i] = poker
+        
+        return len(deck)
+```
+
+# 53. Maximum Subarray
+
+参考链接：
+
+[动态规划设计：最大子数组](https://labuladong.gitee.io/algo/3/24/76/)
+
+# 509.
+
+# 322.
+
+# 518. Coin Change 2
+
+参考链接：
+
+[经典动态规划：完全背包问题](https://labuladong.gitee.io/algo/3/25/82/)
+
+这道题可以看作是一个背包问题的变体：
+
+**有一个背包，最大容量为 `amount`，有一系列物品 `coins`，每个物品的重量为 `coins[i]`，每个物品的数量无限。请问有多少种方法，能够把背包恰好装满？**
+
+在这里，关键的问题是每个物品数量是无限的。
+
+思路：也是使用动态规划，注意明确「状态」和「选择」
+
+状态：「背包容量」和「可选择的物品」
+
+选择：「装进背包」和「不装进背包」
+
+DP 数组的定义：**若只使用 `coins` 中的前 `i` 个硬币的面值，若想凑出金额 `j`，有 `dp[i][j]` 种凑法。**
+
+状态转移方程：`dp[i][j] = dp[i - 1][j] + dp[i][j - coins[i-1]]`
+
+在确定状态转移方程的过程中，我们需要保证子问题得到的最大组合数不会重复。`dp[i - 1][j]` 意味着我们的选择不把该硬币凑进我们的组合里，同时之后只限制在前`i-1`个面值的硬币里作选择。另一种情况`dp[i][j - coins[i-1]]`意味着我们在该轮选择接受该硬币，并且继续保留选择第`i`个面值的硬币的权利。这样两种情况下第`i`个面值的硬币的数量就是不同的，进而可以将他们对应的最大组合数相加得到当前状态下的最大组合数。
+
+```python
+class Solution:
+    def change(self, amount: int, coins: List[int]) -> int:
+        
+        # 特殊输入处理
+        if amount == 0: return 1
+        if coins[0] > amount: return 0
+        
+        # 初始化dp数组
+        n_coins = len(coins)
+        dp = [[0]*(amount + 1) for i in range(n_coins)]
+        
+        # dp[i][j] 当背包容量为 i 时，面对是否要往里装一个 j 硬币时的最多组合数
+        
+        # 初始状态
+        for i in range(n_coins):
+            dp[i][0] = 1
+        for j in range(1, amount+1):
+            if coins[0] > j:
+                dp[0][j] = 0
+            else:
+                dp[0][j] = dp[0][j-coins[0]]
+        
+        # 状态转移
+        for i in range(1, n_coins):
+            for j in range(1, amount+1):
+                if coins[i] > j:
+                    dp[i][j] = dp[i-1][j]
+                else:
+                    dp[i][j] = dp[i-1][j] + dp[i][j-coins[i]]
+            
+        return dp[-1][-1]
+```
+
+# 174. Dungeon Game
+
+参考链接：
+
+[动态规划帮我通关了《魔塔》](https://labuladong.gitee.io/algo/3/26/85/)
+
+知道这道题要用动态规划解，但是起初无论怎么定义 DP 数组，都没办法实现合理的状态转移。
+
+因为我一开始都把 DP 数组定义成类似于：
+
+**从左上角（`dungeon[0][0]`）走到`dungeon[i][j]`至少需要`dp[i][j]`的生命值**
+
+**从左上角（`dungeon[0][0]`）走到`dungeon[i][j]`能保留的最大生命值为`dp[i][j]`**
+
+等等……
+
+希望能通过这些定义最终推出结果，但是很显然，这道题跟那些求「最大路径和」之类的题目不一样，因为在这样的DP数组定义下，这道题目的局部最优并不等于全局最优。
+
+当我们考虑状态`dp[i][j]`，不论我们基于何种原则（上一个状态剩下的血量，或者上一个路线的历史最低生命值）去选择上一个状态（`dp[i-1][j]`或者`dp[i][j-1]`），我们都不能保证在接下来的路线中不会遇到非常强大的怪物（绝对值非常大的负数），从而导致初始生命值需要非常大的值。
+
+因此，我们无论如何不能从已有路线中得到足够的信息从而进行状态转移，我们会发现**信息藏在未来的路径里**，而究其原因，根本上是因为增减机制的不对称性：即**勇者先碰到怪物和先吃血瓶对于结果的影响是不同的。**
+
+**信息藏在未来的路径里**，所以我们需要反向定义我们的 DP 数组，把终点公主（`dungeon[-1][-1]`）作为初始状态，反推到起点（`dungeon[0][0]`）：
+
+**从`dungeon[i][j]`走到右下角(`dungeon[-1][-1]`)至少需要`dp[i][j]`的生命值**
+
+至此，DP 数组定义完毕，从终点开始反向遍历，便会发现自然而然就推出了状态转移方程。
+
+以后做动态规划之前不妨先想一想，**这题需要正着来还是反着来？**，**我正着推能掌握足够的信息进行状态转移吗？**
+
+代码如下：
+
+```python
+class Solution:
+    def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
+        
+        # 初始化dp数组
+        height, width = len(dungeon), len(dungeon[0])
+        dp = [[0] * width for i in range(height)]
+        
+        # 初始状态
+        dp[-1][-1] = max(1, 1 - dungeon[-1][-1])
+        for i in range(height-2, -1, -1):
+            dp[i][-1] = max(1, dp[i+1][-1] - dungeon[i][-1])
+        for j in range(width-2, -1, -1):
+            dp[-1][j] = max(1, dp[-1][j+1] - dungeon[-1][j])
+            
+        # dp[i][j][1]：从(1,j)开始走到右下角至少需要多少生命值
+        
+        # 状态转移
+        for i in range(height-2, -1, -1):
+            for j in range(width-2, -1, -1):
+                dp[i][j] = max(1, min(dp[i+1][j], dp[i][j+1]) - dungeon[i][j])
+                
+        return max(1, dp[0][0])
+```
+
+# 514. Freedom Trail
+
+## DP 递归函数
+
+参考链接：
+
+[动态规划帮我通关了《辐射4》](https://labuladong.gitee.io/algo/3/26/86/)
+
+按照参考的思路，通过构建递归 DP 函数来解决该问题。
+
+首先明确「状态」和「选择」：
+
+状态：「当前`ring`上指针指向的位置」即`ring[i]`，「当前需要输入的字符」即`key[j]`
+
+选择：「如何拨动指针得到待输入的字符」
+
+通过分析，可以知道，当目标字符`key[j]`在`ring`中是唯一的时候，我们只有一个选择，即从顺时针或者逆时针中选择路径最短的那一个方向转过去。
+
+而当目标字符存在不止一个的时候，子问题就会发生分裂：我们需要通过穷举来比较选择哪一个位置作为下一个目标字符时得到的最终操作数最小。
+
+因此我们可以更加细化「选择」：
+
+选择：「转到圆盘上重复的目标字符中的哪一个」
+
+于是状态转移方程就比较好写了，伪代码如下:
+
+```python
+# 当前状态 ring[i], 目标字符key[j]
+def dp(i,j):
+    if j >= len(key): return 0 # 基础状态
+    res = ... 
+    for k in range(len(ring)):
+        res = min(res, min(abs(k-i), len(ring)-abs(k-i)) + dp(k, j+1))
+    return res
+```
+
+其中`min(abs(k-i), len(ring)-abs(k-i))`是从`i`到`k`的最少旋转次数，
+
+`dp(k, j+1))`是以`ring[k]`为初始状态，`key[j+1]`为目标字符的最小旋转次数。
+
+## 更快，更高，更强
+
+然而我们可以发现，即便结合备忘录，上述方法的时间复杂度也非常高。
+
+而压缩问题的关键往往在于深刻理解这一问题状态转移的本质。
+
+在 LeetCode 的讨论里发现了一个很厉害的方案：
+
+基本逻辑和上述方案一样，也是使用 DP 函数递归，「状态」相同，但是在「选择」方面做出了很大的改进。
+
+**选择：选择「顺时针最近的」或者「逆时针最近的」目标字符作为该轮的选择**
+
+事实也是如此，对于状态`(i,j)`来说，最佳的`key[j]`一定只能是`ring[i]`的左边第一个或是右边第一个`key[j]`，只能是这两者之一。
+
+而对于一个圆盘来说，我们可以**用字典来把圆盘上每一个位置向左或者向右碰到的第一个其他字符的位置存下来**，这样就不需要遍历来寻找这些目标字符。
+
+直接将递归算法内的复杂度从`len(ring)`降到了常数级别，整整降低了一个数量级。
+
+总结，备忘录法提供的只是剪枝，整体复杂度的数量级很难下来。而根据问题本身性质对状态的「选择」进行数量级级别的减少复杂度，能对算法起更关键的优化效果。
+
+代码如下：
+
+```python
+# 递归法
+class Solution:
+    def findRotateSteps(self, ring: str, key: str) -> int:
+        
+        len_ring = len(ring)
+        
+        # 把每一个字符按照顺时针和逆时针顺序碰到的第一个其他字符的索引记下来
+        # ring[i] 左边第一个字符 c 的索引为 lefts[i][c]
+        lefts = [None for _ in range(len_ring)]
+        cur = dict()
+        for i in range(-len_ring + 1, len_ring, 1):
+            cur[ring[i]] = i
+            if i >= 0:
+                lefts[i] = cur.copy()
+        
+        # ring[i] 右边第一个字符 c 的索引为 rights[i][c]
+        rights = [None for _ in range(len_ring)]
+        cur = dict()
+        for i in range(2*len_ring-1, -1, -1):
+            cur[ring[i%len_ring]] = i
+            if i <= len_ring-1:
+                rights[i] = cur.copy()
+        
+        # 当前状态ring[idx_ring], 下一个目标key[idx_key], 最少需要的旋转次数为 dp(idx_ring, idx_key)
+        @functools.cache
+        def dp(idx_ring, idx_key):
+            
+            if idx_key >= len(key): return 0
+            
+            left_target = lefts[idx_ring][key[idx_key]]
+            right_target = rights[idx_ring][key[idx_key]]
+            
+            return min(
+                abs(idx_ring - left_target) + dp(left_target%len_ring, idx_key+1),
+                abs(idx_ring - right_target) + dp(right_target%len_ring, idx_key+1)
+            )
+        
+        # 最终结果加上拍按钮的次数
+        return dp(0,0) + len(key)
 ```
