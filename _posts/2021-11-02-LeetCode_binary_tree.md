@@ -3,7 +3,7 @@ title: LeetCode 刷题记录 - Binary Tree
 author: Stone SHI
 date: 2021-11-02 5:47:00 +0200
 categories: [Blogging, LeetCode]
-tags: [LeetCode, Binary Tree]
+tags: [LeetCode, Binary tree]
 ---
 
 <head>

@@ -3,7 +3,7 @@ title: LeetCode 刷题记录 - 数据结构之链表（Linked List）
 author: Stone SHI
 date: 2021-12-27 22:26:00 +0200
 categories: [Blogging, LeetCode]
-tags: [LeetCode, Linked List]
+tags: [LeetCode, Linked list]
 ---
 
 <head>
@@ -121,6 +121,10 @@ class Solution:
                 heapq.heappush(queue, (curr.next.val, count, curr.next))
         return head.next 
 ```
+
+参考资料：
+
+[优先级队列和堆（一）](https://zhuanlan.zhihu.com/p/355317948)
 
 # 19. Remove Nth Node From End of List
 
@@ -504,4 +508,76 @@ class Solution:
             second = second.next
         
         return True
+```
+
+# 24. Swap Nodes in Pairs
+
+一道相对简单的题目，每两个 node 交换一下位置。
+
+思路就是创建虚拟头指针，从虚拟指针开始，以步长为二遍历链表，每次都交换指针后两个链表的位置。
+
+基本要注意的就是交换的顺序问题。
+
+```python
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+        # 创建虚拟头指针
+        node = dummy = ListNode(next=head)
+        # 遍历直到倒数第二个或者最后一个节点
+        while node.next and node.next.next:
+            # 交换后两个节点的位置
+            next_node = node.next.next
+            node.next.next = next_node.next
+            next_node.next = node.next
+            node.next = next_node
+            # 跳过一个节点
+            node = next_node.next
+
+        return dummy.next
+```
+
+## 61. Rotate List
+
+读题后可以使用**前后双指针**解决。
+
+唯一需要注意的细节就是`k`的取值上限远大于链表的长度上限，所以需要先取模求出去掉重复旋转的实际偏转值`k_pure`。
+
+然后使用前后相隔`k_pure`步的两个指针遍历链表，当走得快的指针到底之后，把两个指针之间的节点全部接在链表头部即可完成任务。
+
+```python
+class Solution:
+    def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # 特殊情况
+        if k == 0 or not head:
+            return head
+        # 虚拟头指针
+        dummy = ListNode(next=head)
+        # 计算节点数量
+        count = 0
+        node = dummy.next
+        while node:
+            node = node.next
+            count += 1
+        # 计算取余后的实际旋转节点数
+        k_pure = k % count
+        # 如果旋转数为 0，则返回原链表
+        if k_pure == 0:
+            return head
+        # 使用前后相隔 k_pure 个节点的双指针
+        # 指针 1 走了 k_pure 步之后指针 2 开始走
+        count = 0
+        node_1 = dummy
+        while (count < k_pure):
+            count += 1
+            node_1 = node_1.next
+        node_2 = dummy
+        # 同步前进
+        while(node_1.next):
+            node_1 = node_1.next
+            node_2 = node_2.next
+        # 指针1到头时将两个指针之间的部分链表前部
+        node_1.next = dummy.next
+        dummy.next = node_2.next
+        node_2.next = None
+        return dummy.next
 ```

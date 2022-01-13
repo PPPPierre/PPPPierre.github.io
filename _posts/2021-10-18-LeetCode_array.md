@@ -293,3 +293,158 @@ class Solution:
                 k += 1
                 l -= 1
 ```
+
+# 33. 搜索旋转排序数组
+
+整数数组 `nums` 按升序排列，数组中的值**互不相同**。
+
+在传递给函数之前，`nums` 在预先未知的某个下标 `k` （ `0 <= k < nums.length` ）上进行了**旋转**，使数组变为 `[nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]` （下标 **从 0 开始** 计数）。例如， `[0,1,2,4,5,6,7]` 在下标`3`处经旋转后可能变为 `[4,5,6,7,0,1,2]` 。
+
+给你**旋转后**的数组 `nums` 和一个整数 `target` ，如果 nums 中存在这个目标值 `target` ，则返回它的下标，否则返回 `-1` 。
+
+## 思路
+
+提示说时间要求$O(logN)$，那肯定想到用**二分法**。
+
+首先的思路是先用一遍二分法找到旋转的下标 `k` ，然后复原数组之后再重新用一次二分法。
+
+但是经过仔细思考之后发现，其实只需要一次二分法也能定位 `target`，只是在每一次决定取哪半边的时候需要更加复杂的判断。
+
+因为**旋转**数组从下标 `k` 开始被分割成左右两个递增序列，且左边序列的最小值大于右边序列的最大值。
+
+因此在使用二分法时， 通过比较左右两指针值的大小，可以得出两指针是否在一个递增序列中，
+
+如果在一个序列中，就变成了常规的二分法；
+
+如果不是，则讨论**中点**落在哪一个递增序列里，然后结合 `target` 的位置决定取左边还是取右边。
+
+## 遇到的问题
+
+二分法最容易碰到的就是**无限循环**的问题。
+
+我们知道当 `left` 和 `right` 只差 `1` 时，算出来的 `middle` 就等于左指针的位置。
+
+而此时当你的代码在后续的左右指针变动中存在 `left = middle` 而不是 `left = middle + 1` 时，就存在无限循环的风险，所以需要仔细筛查。
+
+当更新语句中赋的值为 `middle + 1` 时，该语句所在的判断情况应当对应 `if target > nums[middle]` 或者 `if target < nums[middle]`，
+
+因为只有百分百确定 `middle` 位置的值不等于 `target` 时，我们才可以在更新时直接跳过 `middle` ,从 `middle + 1` 开始新的二分。
+
+
+## 参考代码
+
+```python
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        # 直接使用二分法， 只是判断的情况比较复杂
+        l, r = 0, len(nums) - 1
+        while l < r:
+            # 计算中点
+            mid = (l + r) // 2
+            # 首先对根据左右指针的值进行情况分类
+            if nums[l] < nums[r]:
+                # l 和 r 都在一个递增序列里
+                # 常规二分法解决
+                if target > nums[mid]:
+                    l = mid + 1
+                else:
+                    r = mid
+            else:
+                # l 和 r 分别在两个序列里
+                # 首先对中点的位置分类讨论
+                if nums[mid] >= nums[l]:
+                    # 中点在左边的递增区间里
+                    # 这里左边界要取到，否则
+                    if nums[l] <= target <= nums[mid]:
+                        r = mid
+                    else:
+                        l = mid + 1
+                else:
+                    # 中点在右边的递增区间里
+                    # 这里右边界要取到
+                    if nums[mid] < target <= nums[r]:
+                        l = mid + 1
+                    else:
+                        r = mid
+
+        # 循环结束后 l == r
+        if nums[l] == target:
+            return l
+        else:
+            return -1
+```
+
+# 34. 在排序数组中查找元素的第一个和最后一个位置
+
+也是一道用二分法的数组题。题目中给出的 `nums` 数组中的数字是单调递增的，但是数字会有重复。
+
+要求给出 `target` 的左右边界。
+
+思路如下：
+
+首先用传统二分法找到第一个 `target`，然后以这个 `target` 把数组分成两部分，左右分别再用二分法寻找左右边界即可。
+
+最后补充代码处理没找到的情况以及特殊情况即可。
+
+```python
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return (-1, -1)
+        
+        # 二分法
+        l , r = 0, len(nums) - 1
+        found = False
+
+        # 目标是左右指针的值都是 target
+        # 或左指针等于右指针
+        while (nums[l] != target or nums[r] != target) and l < r:
+            # 中点指针
+            mid = (l + r) // 2
+            if nums[mid] > target:
+                r = mid - 1
+            elif nums[mid] < target:
+                l = mid + 1
+            else:
+                # 当中点值等于 target 时，保存并跳出循环
+                first_target = mid
+                found = True
+                break
+        
+        # 如果没找到 target，则左右指针一定相等
+        if not found:
+            if nums[l] != target:
+                # 如果左指针的值不是 target，则没找到，返回 (-1, -1)
+                return (-1, -1)
+            else:
+                # 如果是，则说明左右指针值均指向唯一的 target
+                return (l, r)
+
+        # 把边界保存下来
+        left, right = l, r
+
+        # 找到了第一个 target 之后以这个 target 为界，分别用二分法寻找左右边界
+        # 寻找左边界
+        r = first_target
+        while (nums[left] != target) and left < r:
+            # 中点指针
+            mid = (left + r) // 2
+            if nums[mid] < target:
+                left = mid + 1
+            else:
+                r = mid
+        
+        # 寻找右边界
+        l = first_target
+        while (nums[right] != target) and l < right:
+            # 中点指针
+            mid = (l + right) // 2 + 1
+            if nums[mid] > target:
+                right = mid - 1
+            else:
+                l = mid
+
+        # 返回左右边界
+        return (left, right)
+
+```
