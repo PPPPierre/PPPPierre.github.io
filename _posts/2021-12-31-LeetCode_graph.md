@@ -564,6 +564,110 @@ class Solution:
 
 [算法4（Algorithms4）- Part 1 动态连通性（Dynamic Connectivity）1](https://www.jianshu.com/p/44541a3fe8b3)
 
+# 200. 岛屿数量
+
+这道题可以有两种思路，
+
+1. 简单的 DFS 或者 BFS，思路是遍历整个 `grid`，碰到一个 `"1"` 之后就调用 DFS 或者 BFS 遍历相邻的所有其他 `"1"`。访问过的 `"1"` 需要做上标记，可以使用 `visited` 数组或者直接在原矩阵中将其改为 `"0"`。这样最终岛屿的数量就是调用 DFS / BFS 的次数。
+2. 使用并查集，但是在生成并查集类的时候，要首先根据 `grid` 初始化 `parent` 数组，将所有 `"0"` 的 `parent` 初始化为统一的 `-1`， 然后根据 `"1"` 的数量来决定初始的树的数量，也就说是一个只针对一个元素的并查集。
+
+BFS / DFS 代码：
+
+```python
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        # 高度和宽度
+        m, n = len(grid), len(grid[0])
+        visited = [[False]*n for _ in range(m)]
+        num_islands = 0
+
+        # 遍历网格
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "1" and not visited[i][j]:
+                    # 如果该块为陆地且未访问则发现新大陆
+                    # 调用 bfs 且岛屿数量 +1
+                    self.bfs(grid, visited, (i,j))
+                    num_islands += 1
+        return num_islands
+
+    def bfs(self, grid, visited, start):
+        # 只要踩上了一块土地，整块大陆就会被标记访问过
+        m, n = len(grid), len(grid[0])
+        queue = [start]
+        while queue:
+            i, j = queue.pop(0)
+            if visited[i][j]:
+                continue
+            visited[i][j] = True
+            for i_next, j_next in [(i+1,j), (i, j+1), (i-1, j), (i, j-1)]:
+                if (0 <= i_next < m) and (0 <= j_next < n) and grid[i_next][j_next] == "1" and not visited[i_next][j_next]:
+                    queue.append((i_next, j_next))
+```
+
+并查集实现方法的代码：
+
+```python
+class UF:
+    def __init__(self, grid):
+        # 根据 grid 生成 parent 数组
+        m, n = len(grid), len(grid[0])
+        self.parent = [-1] * (m * n)
+        self.weight = [1] * (m * n)
+        self.count = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "1":
+                    self.parent[i * n + j] = i * n + j
+                    self.count += 1
+
+    def connected(self, node_1, node_2):
+        root_1 = self.find(node_1)
+        root_2 = self.find(node_2)
+        return root_1 == root_2
+    
+    def union(self, node_1, node_2):
+        if self.connected(node_1, node_2):
+            return
+        root_1 = self.find(node_1)
+        root_2 = self.find(node_2)
+        if self.weight[root_1] < self.weight[root_2]:
+            root_1, root_2 = root_2, root_1
+        self.parent[root_2] = root_1
+        self.weight[root_1] += self.weight[root_2]
+        self.count -= 1
+
+    def find(self, node):
+        while (self.parent[node] != node):
+            self.parent[node] = self.parent[self.parent[node]]
+            node = self.parent[node]
+        return node
+
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        # 高度和宽度
+        m, n = len(grid), len(grid[0])
+
+        # 初始化 Union-Find 类，多一个留给水源
+        uf = UF(grid)
+
+        # 遍历岛屿
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "1":
+                    # 当判断为陆地时，检查附近的格子
+                    # 只需要判断右边和下边的格子是因为这样足够可以检查到所有的边了
+                    for i_next, j_next in [(i + 1, j), (i, j + 1)]:
+                        if (i_next < m ) and (j_next < n ) and grid[i_next][j_next] == "1":
+                            node_1 = i * n + j 
+                            node_2 = i_next * n + j_next
+                            # 连接
+                            uf.union(node_1, node_2)
+
+        return uf.count
+```
+
+
 # 130. Surrounded Regions
 
 第 130 题，被围绕的区域：给你一个 M × N 的二维矩阵，其中包含字符 `X` 和 `O`，让你找到矩阵中**四面**被 `X` 围住的 `O`，并且把它们替换成 `X`。

@@ -18,7 +18,7 @@ tags: [LeetCode,]
     </script>
 </head>
 
-# 1036. 逃离大迷宫
+# 2022.01.11 - 1036. 逃离大迷宫
 
 ## 题干
 
@@ -108,7 +108,7 @@ class Solution:
         return True
 ```
 
-# 747. 至少是其他数字两倍的最大数（简单）
+# 2022.01.13 - 747. 至少是其他数字两倍的最大数（简单）
 
 简单题，找到数组中的最大值并确保比其他数字都大两倍以上。
 
@@ -136,3 +136,78 @@ class Solution:
         else:
             return -1
 ```
+
+# 2022.01.15 - 1716. 计算力扣银行的钱
+
+简简单单的等差数列计算。
+
+```python
+class Solution:
+    def totalMoney(self, n: int) -> int:
+        weeks = n // 7
+        days = n % 7
+        money = 0
+        for i in range(weeks):
+            money += (i + 4) * 7
+        if days != 0:
+            money += (2 * weeks + 1 + days) * days / 2
+        return int(money)
+```
+
+# 382. 链表随机节点
+
+这道题的目的主要在于考察蓄水池抽样算法。
+
+如果我们可以通过遍历得知数据大小，那么可以通过均匀分布生成一个随机索引返回答案就行了。
+
+但是实际场景是：
+
+给定一个数据流，数据流长度 `N` 很大，且N直到处理完所有数据之前都不可知，请问如何在只遍历一遍数据（$O(N)$）的情况下，能够随机选取出 `m` 个不重复的数据。
+
+有三个事情值得注意：
+
+1. 数据流长度 `N` 很大且不可知，所以不能一次性存入内存，也不能一次性得知数据的长度，数据大小也总是在变动的；
+2. 时间复杂度为$O(N)$，所以不能预先存储再用索引取出；
+3. 随机选取 `m` 个数，每个数被选中的概率为 `m/N` ，随机性的保证。
+
+算法思路如下：
+
+1. 如果接收的数据量小于 `m` ，则依次放入蓄水池。
+2. 当接收到第 `i` 个数据时， `i >= m` ，在 `[0, i]` 范围内取以随机数 `d` ，若 `d` 的落在 `[0, m-1]` 范围内，则用接收到的第 `i` 个数据替换蓄水池中的第 `d` 个数据。
+3. 重复步骤2。
+
+算法的精妙之处在于：当处理完所有的数据时，蓄水池中的每个数据都是以 `m/N` 的概率获得的。可以通过简单的手算来证明。
+
+这道题目相当于 `m` 等于 1。
+
+核心代码如下：
+
+```python
+class Solution:
+
+    def __init__(self, head: Optional[ListNode]):
+        # 蓄水池算法
+        self.head = head
+
+    def getRandom(self) -> int:
+        node = self.head
+        res_node = node
+        count = 1
+        # 从第二个数据开始替换
+        while node.next:
+            node = node.next
+            count += 1
+            # 生成基于目前遍历数据数目的随机数
+            rand = random.randrange(count)
+            if rand == 0:
+                # 如果随机到的数为 0，则替换
+                res_node = node
+        return res_node.val
+```
+
+CPU 的性能总是有限的，当数据大小继续增加的时候，为了提高效率，我们可以应用分布式技术。
+
+参考资料：
+
+[蓄水池抽样算法（Reservoir Sampling）](https://www.jianshu.com/p/7a9ea6ece2af)
+

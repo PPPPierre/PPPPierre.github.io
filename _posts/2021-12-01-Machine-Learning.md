@@ -33,8 +33,6 @@ logarithmic regression 逻辑回归:
 
 [损失函数｜交叉熵损失函数](https://zhuanlan.zhihu.com/p/35709485)
 
-BN 层
-
 Fast rcnn
 
 Softmax
@@ -47,11 +45,25 @@ Pointnet
 
 [Image Classification benchmark](https://paperswithcode.com/task/image-classification)
 
+## 如何解决梯度爆炸与梯度消失
+
+[入门|详解机器学习中的梯度消失、爆炸原因及其解决方法](https://cloud.tencent.com/developer/article/1052770)
+
+[神经网络中的权重初始化一览：从基础到Kaiming](https://zhuanlan.zhihu.com/p/62850258)
+
+BN 层
+
 # Cours 4 - Support vector machine - 11月30日下午
 
 支持向量机：
 
 [支持向量机系列](https://blog.pluskid.org/?page_id=683)
+
+[上面链接乱码，看这个转载](https://cosx.org/2014/01/svm-series-maximum-margin-classifier/)
+
+[手推SVM（一）-数学推导](https://blog.csdn.net/qq_39422642/article/details/78725278)
+
+[深入浅出机器学习技法（一）：线性支持向量机 LSVM](https://cloud.tencent.com/developer/news/177390)
 
 # Cours 5 - Clustering - 12月01日上午
 
@@ -61,7 +73,9 @@ Gaussian mixture
 
 # Cours 6 - Random Forests / Boosting - 12月01日下午
 
-[XGBoosting](https://zhuanlan.zhihu.com/p/90520307)
+[XGBoost算法的原理详析[文献阅读笔记]](https://zhuanlan.zhihu.com/p/90520307)
+
+[详解《XGBoost: A Scalable Tree Boosting System》](https://zhuanlan.zhihu.com/p/89546007)
 
 lightBGM
 

@@ -536,7 +536,7 @@ class Solution:
         return dummy.next
 ```
 
-## 61. Rotate List
+# 61. Rotate List
 
 读题后可以使用**前后双指针**解决。
 
@@ -579,5 +579,65 @@ class Solution:
         node_1.next = dummy.next
         dummy.next = node_2.next
         node_2.next = None
+        return dummy.next
+```
+
+# 83. 删除排序链表中的重复元素
+
+给的是一个递增数组，删除其中重复的元素。
+
+直接遍历，当后一个节点的值等于当前节点时，直接删除后一个节点即可。
+
+```python
+class Solution:
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        # 虚拟头指针
+        dummy = ListNode(val=-101, next=head)
+        curr_node = dummy
+        while curr_node.next:
+            # 当下一个节点的值等于前一节点时，就删除下一个节点
+            if curr_node.next.val == curr_node.val:
+                curr_node.next = curr_node.next.next
+            else:
+                curr_node = curr_node.next 
+        
+        return dummy.next
+```
+
+# 82. 删除排序链表中的重复元素 II
+
+上一题的升级版，要求只保留不重复的元素
+
+多加几个步骤把第一个重复元素也删除就行了
+
+```python
+class Solution:
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        # 虚拟头指针
+        dummy = ListNode(val=-101, next=head)
+        curr_node = dummy
+        # 指示当前节点是否是重复节点
+        delete_curr = False
+        pre_node = None
+        while curr_node.next:
+            if curr_node.next.val == curr_node.val:
+                # 当后驱节点等于当前节点时，删除后驱节点并标记当前节点
+                curr_node.next = curr_node.next.next
+                delete_curr = True
+            else:
+                # 否则，判断当前节点是否需要删除
+                if delete_curr:
+                    # 当前节点是重复节点，删除
+                    pre_node.next = curr_node.next
+                    curr_node = pre_node.next
+                else:
+                    # 当前节点不是重复节点，不删除
+                    pre_node = curr_node
+                    curr_node = curr_node.next
+                delete_curr = False
+                
+        if delete_curr:
+            pre_node.next = curr_node.next
+
         return dummy.next
 ```
