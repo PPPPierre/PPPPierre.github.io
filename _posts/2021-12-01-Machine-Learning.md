@@ -51,7 +51,9 @@ Pointnet
 
 [神经网络中的权重初始化一览：从基础到Kaiming](https://zhuanlan.zhihu.com/p/62850258)
 
-BN 层
+[神经网络中BN层的原理与作用](https://blog.csdn.net/weixin_42080490/article/details/108849715)
+
+[Batch Normalization学习笔记及其实现](https://zhuanlan.zhihu.com/p/26138673)
 
 # Cours 4 - Support vector machine - 11月30日下午
 
@@ -77,7 +79,7 @@ Gaussian mixture
 
 [详解《XGBoost: A Scalable Tree Boosting System》](https://zhuanlan.zhihu.com/p/89546007)
 
-lightBGM
+[详解LightGBM两大利器：基于梯度的单边采样（GOSS）和互斥特征捆绑（EFB）](https://zhuanlan.zhihu.com/p/366234433)
 
 # Cours 7 - Sequential data / RNN
 
@@ -85,6 +87,6 @@ lightBGM
 
 [RNN/LSTM BPTT详细推导以及梯度消失问题分析](https://zhuanlan.zhihu.com/p/85776566)
 
-[人人都能看懂的LSTM](https://zhuanlan.zhihu.com/p/32085405)
+[人人都能看懂的 LSTM](https://zhuanlan.zhihu.com/p/32085405)
 
-[人人都能看懂的GRU](https://zhuanlan.zhihu.com/p/32481747)
+[人人都能看懂的 GRU](https://zhuanlan.zhihu.com/p/32481747)

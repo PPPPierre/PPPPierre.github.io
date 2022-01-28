@@ -510,6 +510,65 @@ class Solution:
 
 [经典动态规划：最长公共子序列](https://labuladong.gitee.io/algo/3/24/77/)
 
+# 1035. 不相交的线
+
+和上一题的思路差不多，但是添加了一个优化方法，可以将两个数组中没有交集的数直接剔除。
+
+因为没有交集的数一定不会有连线，在数据量增大的情况下，这些数据的冗余非常影响速度。
+
+这道题可以用双指针 `i` 和 `j ` 分别从两个数组起点开始遍历的思路来理解，指针只能前进不能后退，那么每次状态转移的自由度为 2，指针 `i` 前进，或者指针 `j` 前进。
+
+而当 `nums1[i] == nums2[j]` 的时候，连线其实是必须的，因为按照规则，无法回头，所以当下连线一定是最好的选择。
+
+那么就可以直接定义一个二维的 dp 数组来进行状态转移，
+
+这里的 dp 表格的定义为： `dp[i][j]` 为数组 `nums[:i+1]` 和数组 `nums[:j+1]` 的最大连线数。
+
+当 `nums1[i] == nums2[j]` 时，我们一定会连线，所以最大连线数等于 `dp[i][j] = dp[i-1][j-1] + 1`，也就是 `nums[:i]` 和 `nums[:j]` 之间的最大连线数加上新连的这根线。
+
+当 `nums1[i] != nums2[j]` 时，我们不连线，所以 `dp[i][j]` 取决于上一个状态，`i` 退一步或者 `j` 退一步的最大连接数，即 `dp[i][j] = max(dp[i][j-1], dp[i-1][j])`。
+
+代码参考如下：
+
+```python
+class Solution:
+    def maxUncrossedLines(self, nums1: List[int], nums2: List[int]) -> int:
+        # 优化1：取交集，不是交集的不可能有连线，如果冗余过多导致速度很慢
+        nums = set(nums1) & set(nums2)
+
+        nums1, nums2 = [i for i in nums1 if i in nums], [j for j in nums2 if j in nums]
+        if not nums1 or not nums2:
+            return 0
+
+        # 获取数列基本长度信息
+        n_row, n_col = len(nums1), len(nums2)
+
+        # 初始化dp矩阵
+        dp = [[0] * n_col for _ in range(n_row)]
+        if nums1[0] == nums2[0]:
+            dp[0][0] = 1
+
+        # 状态转移
+        for i in range(1, n_row):
+            if nums1[i] != nums2[0]:
+                dp[i][0] = dp[i-1][0]
+            else:
+                dp[i][0] = 1
+        for j in range(1, n_col):
+            if nums1[0] != nums2[j]:
+                dp[0][j] = dp[0][j-1]
+            else:
+                dp[0][j] = 1
+        for i in range(1, n_row):
+            for j in range(1, n_col):
+                if nums1[i] == nums2[j]:
+                    dp[i][j] = dp[i-1][j-1] + 1
+                else:
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+        
+        return dp[-1][-1]
+```
+
 # 583. Delete Operation for Two Strings
 
 思路同上

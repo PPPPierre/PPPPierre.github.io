@@ -43,7 +43,7 @@ tags: [LeetCode, Graph]
 
 思路比较简单：以`0`为起点遍历图，同时记录遍历过的路径，当遍历到终点时将路径记录下来即可。
 
-因为输入的图是无环的，所以不需要`visited`数组辅助，每条路径都是一定有终点的。
+因为输入的图是无环且需要重复访问节点，所以不需要`visited`数组辅助，每条路径都是一定有终点的。
 
 参考代码如下：
 
@@ -1054,6 +1054,8 @@ class Solution:
 
 DIJKSTRA 算法 的输入是一幅图`graph`和一个起点`start`，目的是返回一个记录从 start 起点到所有节点的最短路径权重的数组。
 
+这种问题一般称作 **单源最短路径** 问题。
+
 函数签名如下：
 
 ```python
@@ -1216,6 +1218,10 @@ def dijkstra(start: int, graph: List[List[tuple[int]]]) -> List[int]:
 Dijkstra 算法的复杂度随着其内部数据结构的实现的不同而不同。假设图中的节点数量为`V`，边的数量为`E`，代码中的优先队列是用二叉堆实现的。那么由于在最差情况下，节点可能会重复进队，而这个队列内元素数量则和边的数量成正比，因此构造二叉堆的时间复杂度就是$O(Elog(E))$。同时邻接表中所有的边的信息都会被遍历一遍，因此总的时间复杂度就是：
 
 $O(E+Elog(E))=O(Elog(E))$
+
+## 参考链接
+
+[我写了一个模板，把 DIJKSTRA 算法变成了默写题](https://labuladong.gitee.io/algo/2/19/42/)
 
 ## 743. Network Delay Time
 
@@ -1395,6 +1401,87 @@ class Solution:
         return min_effort[-1][-1]
 ```
 
-## 参考链接
+## 1345. 跳跃游戏 IV
 
-[我写了一个模板，把 DIJKSTRA 算法变成了默写题](https://labuladong.gitee.io/algo/2/19/42/)
+虽然这道题题干中输入数据是以数组的形式存储，但实际上下标与下标之间的 `jump` 实际上就可以等价于节点相连。
+
+所以这道题的数据可以转换为一张**无向无权图**，目标就是找到起点到终点的最短路径。
+
+所以思路就变得很清晰了：DFS + 剪枝。
+
+我们使用 `difaultdict` 来存储相同值的索引，作为类似于邻接表一样的结构。
+
+在这里需要注意，在 DFS 遍历到一个索引时就将所有和该索引具有相同值的索引推到队列中，然后要**删除该索引**，这样才不会重复遍历这些索引判断是否需要将其推入栈。
+
+虽然会有 `visitedIndex` 集合来保证这些重复索引不会被推入栈，但是在相同值的索引数量太多的时候，还是需要$O(n^2)$的时间复杂度去判断，所以需要**过河拆桥**。
+
+然后实现 DFS，这里我掉进了一个大坑：
+
+DFS 需要一个队列，而 Python 中队列的实现有好多种：
+
+1. 双端队列 `q = collections.deque()`，使用 `q.addpend()` 和 `q.popleft()` 方法来进出队列；
+
+2. 列表 `q = []`，使用 `q.addpend()` 和 `q.pop(0)` 方法来进出队列；
+
+2. 同上，使用列表，但是出队列使用读取索引加 `q = q[1:]` 的方法来更新队列。
+
+第一个方法的时间复杂度是 $O(1)$，第二个和第三个的方法是 $O(n)$。
+
+原因在于列表在使用 `pop(i)` 方法之后，只要 `i` 不是最后一个元素的索引，列表就需要将删除元素往后的所有元素前向移位一格，所以时间复杂度为 $O(n)$。
+
+第三个方法一样，需要逐个元素复制，一样消耗时间。
+
+所以队列一定要用 `collections.deque` 来实现。
+
+参考代码如下：
+
+```python
+class Solution:
+    def minJumps(self, arr: List[int]) -> int:
+        
+        # 用来记录相同值的索引的 dict
+        indexSameValue = defaultdict(list)
+        # 补充记录下跳跃点的信息
+        # 并且删除无用的索引（和前后索引值相同的索引）
+        arrReduced = []
+        count = 0
+        for i, value in enumerate(arr):
+            if 0 < i < len(arr) - 1 and value == arr[i-1] and value == arr[i+1]:
+                continue
+            else:
+                indexSameValue[value].append(count)
+                arrReduced.append(value)
+                count += 1
+        arr = arrReduced
+
+        # 创建辅助用数据结构
+        visitedIndex = [False] * count
+        visitedIndex[0] = True
+        # 双端队列更快！！
+        q = deque()
+        q.append((0,0))
+        # DFS
+        while q:
+            # DFS 的当前位置
+            idx, step = q.popleft()
+            # 如果到达终点，则输出当前步数
+            if idx == count - 1:
+                return step
+            
+            value = arr[idx]
+            # 遍历所有相同值的索引，也就是跳跃
+            for next_idx in indexSameValue[value]:
+                if not visitedIndex[next_idx]:
+                    q.append((next_idx, step + 1))
+                    visitedIndex[next_idx] = True
+            # 过河拆桥，避免重复判断
+            del indexSameValue[value]
+            # 把后一个索引加入队列
+            if idx + 1 < count and not visitedIndex[idx + 1]:
+                q.append((idx + 1, step + 1))
+                visitedIndex[idx + 1] = True
+            # 把前一个索引加入队列
+            if 0 <= idx - 1 and not visitedIndex[idx - 1]:
+                q.append((idx - 1, step + 1))
+                visitedIndex[idx - 1] = True
+```
