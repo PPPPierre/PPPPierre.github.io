@@ -291,9 +291,9 @@ class Solution:
         return res
             
 ```
-# 300. Longest Increasing Subsequence (LIS) {#problem300}
+# 300. 最长递增子序列 Longest Increasing Subsequence (LIS) {#problem300}
 
-一、动态规划
+## 一、动态规划思路一
 
 在这里，如何定义 DP 表内元素的意义是关键。
 
@@ -305,7 +305,7 @@ class Solution:
 
 2. 要足够贴近全局问题，使得从所有子问题的解中可以快速推导出全局问题的解。
 
-以该题为例，将`DP[i]`定义为**以第 i 个元素为结尾的 LIS 的长度。**
+思路一，将`DP[i]`定义为**以第 i 个元素为结尾的 LIS 的长度。**
 
 那么状态转移方程就可以通过第 i 位与 从 0 到 i-1 位的大小关系来得到：
 
@@ -332,37 +332,114 @@ class Solution:
         return max(dp)
 ```
 
-二、二分法
+## 二、动态规划思路二 + 二分法
 
-需要数学证明的方法。通过数学证明，找到了一个与解决该问题等价的操作方法，来源于一种扑克牌游戏。
+思路二，将`DP[i]`定义为**所有长为 `i+1` 的递增子序列中最后一位的最小值。**
 
-在该方法中通过应用二分法可以进一步将时间复杂度压缩到 $O(Nlog(N))$。具体请移步参考链接。
+所以 `DP` 数组的初始状态就是 `DP = [nums[0]]`。
+
+然后按顺序遍历数组，更新 `DP`：
+
+1. 当 `nums` 中的元素 `num` 大于 `DP[-1]` 时，说明找到了比当前最长子序列末位更大的数，因此可以将 `num` 添加到 `DP` 末尾。
+
+2. 当 `nums` 中的元素 `num` 小于等于 `DP[-1]` 时，则需要找到 `DP[:-1]` 中最小的大于 `num` 的数，将其更新为 `num`。这里其实蕴含了**贪心**的思想。因为我们在遍历每一个元素时，总是希望该元素之前的递增子序列的末位尽可能地小，这样才能尽可能长地构造递增子序列。而相同长度的子序列只需要保留末位最小的就可以了。
+
+通过简单的反证法可以证明 `DP` 是单调递增的，因此在第二步时可以使用二分法，进一步将时间复杂度压缩到 $O(Nlog(N))$。
 
 ```python
 class Solution:
     def lengthOfLIS(self, nums: List[int]) -> int:
         n = len(nums)
-        deck = [nums[0]]
-        
-        for k in range(1,n):
-            if nums[k] > deck[-1]:
-                deck.append(nums[k])
+        # dp[i] 表示所有长为 i + 1 的递增子序列中末位的最小值
+        dp = [nums[0]]
+        for num in nums[1:]:
+            if num > dp[-1]:
+                # 找到更长的递增子序列
+                dp.append(num)
             else:
-                i = 0
-                j = len(deck) - 1
-                while (j > i):
-                    middle = int((i + j)/2)
-                    if deck[middle] < nums[k]:
-                        i = middle + 1
+                # 二分查找需要更新的递增子序列长度
+                i, j = 0, len(dp) - 1
+                while i < j:
+                    mid = (i+j) // 2
+                    if num > dp[mid]:
+                        i = mid + 1
                     else:
-                        j = middle
-                deck[i] = nums[k]
-                
-        return len(deck)
+                        j = mid
+                dp[i] = num
+        # 最终 DP 数组的长度就是最长递增子序列的长度
+        return len(dp)
 ```
 
 参考链接：
 [动态规划设计：最长递增子序列](https://labuladong.gitee.io/algo/3/24/74/)
+
+## 追加题：输出最长的上升子序列
+
+
+
+# 491. 递增子序列
+
+看似是递增子序列相关，但实际上是一道需要使用**回溯**技巧的题。
+
+```python
+class Solution:
+    def findSubsequences(self, nums: List[int]) -> List[List[int]]:
+        ans = []
+        path = []
+        def backtrack(nums, start_index):
+            # 将当前位置的数字加入递增子序列
+            path.append(nums[start_index])
+            # 判断当前递增子序列是否满足条件
+            if len(path) > 1:
+                ans.append(path.copy())
+            # 遍历递增子序列下一个数字的选择
+            # 使用 repeated_num 来避免做出重复选择
+            repeated_num = set()
+            for i in range(start_index+1, len(nums)):
+                # 只要是大于当前数字的数都可以作为下一个选择
+                if nums[i] >= path[-1] and nums[i] not in repeated_num:
+                    repeated_num.add(nums[i])
+                    # 调用回溯算法
+                    backtrack(nums, i)
+            # 将当前位置的数字撤出递增子序列
+            path.pop()
+        # 每一个数都可以作为递增子序列的起点
+        # 使用 visited_num 避免起点数字的重复
+        visited_num = set()
+        for i, num in enumerate(nums):
+            if num not in visited_num:
+                visited_num.add(num)
+                # 对起点调用回溯算法
+                backtrack(nums, i)
+        return ans
+```
+
+# 334. 递增的三元子序列
+
+面试字节跳动 Resso 业务的时候考到的题目。
+
+使用**最长递增子序列**的两个思路都可以做，但是使用第二个更直观方便。
+
+如果这里的**三元**改为**多元**，那么题目实质上就变成了求**最长递增子序列**。
+
+而维护的数就不是 `num_1`，`num_2` 而是一个数组，如果求**最长递增子序列**一样用二分法来寻找需要替换更新的位置。
+
+```python
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        n = len(nums)
+        if n < 3:
+            return False
+        num_1, num_2 = nums[0], float('inf')
+        for num in nums[1:]:
+            if num > num_2:
+                return True
+            elif num > num_1:
+                num_2 = num
+            else:
+                num_1 = num
+        return False
+```
 
 # 87. Scramble String
 
