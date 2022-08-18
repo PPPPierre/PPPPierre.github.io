@@ -146,3 +146,57 @@ class Solution:
         
         return ans
 ```
+
+## 39. 组合总和
+
+```python
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        candidates.sort()
+        res = []
+        path = []
+        n = len(candidates)
+        def rec(i, curr_sum):
+            if curr_sum > target or i == n:
+                return
+            if curr_sum == target:
+                res.append(path.copy())
+                return
+            rec(i + 1, curr_sum)
+            path.append(candidates[i])
+            rec(i, curr_sum + candidates[i])
+            path.pop()
+        rec(0, 0)
+        return res
+```
+
+## 40. 组合总和 II
+
+```python
+class Solution:
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        candidates.sort()
+        path = []
+        res = []
+        curr_sum = 0
+        n = len(candidates)
+        def back_track(i, curr_sum):
+            num = candidates[i]
+            path.append(num)
+            curr_sum += num
+            visited = set()
+            if curr_sum == target:
+                res.append(path.copy())
+            elif curr_sum < target:
+                for next in range(i + 1, n):
+                    if candidates[next] not in visited:
+                        back_track(next, curr_sum)
+                        visited.add(candidates[next])
+            path.pop()
+        visited = set()
+        for i in range(n):
+            if candidates[i] not in visited:
+                back_track(i, 0)
+                visited.add(candidates[i])
+        return res
+```

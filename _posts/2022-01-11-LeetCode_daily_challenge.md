@@ -1084,3 +1084,237 @@ class Solution:
                 return nums[mid]
         return nums[l]
 ```
+
+# 2022.02.16 - 1719. 重构一棵树的方案数
+
+号称 LeetCode 史上周赛最难题，几千人里只有十几个人做出来，思维难度非常之变态。
+
+```python
+class UF:
+    def __init__(self, n):
+        self.__count = n
+        self.parent = [i for i in range(n)]
+        self.weight = [1] * n
+        self.roots = set(self.parent)
+
+    def union(self, node1, node2):
+        if not self.connected(node1, node2):
+            if self.weight[node1] <= self.weight[node2]:
+                node_light, node_heavy = node1, node2
+            else:
+                node_light, node_heavy = node2, node1
+            parent_light = self.find(node_light)
+            parent_heavy = self.find(node_heavy)
+            self.parent[parent_light] = parent_heavy
+            self.weight[parent_heavy] += self.weight[parent_light]
+            self.roots.remove(parent_light)
+            self.__count -= 1
+
+    def find(self, node):
+        while node != self.parent[node]:
+            self.parent[node] = self.parent[self.parent[node]]
+            node = self.parent[node]
+        return node
+    
+    def connected(self, node1, node2):
+        return self.find(node1) == self.find(node2)
+    
+    def get_group(self):
+        count = 0
+        root_2_idx = dict()
+        groups = [[] for _ in range(self.__count)]
+        for node in range(len(self.parent)):
+            root = self.find(node)
+            if root not in root_2_idx:
+                root_2_idx[root] = count
+                count += 1
+            groups[root_2_idx[root]].append(node)
+        return groups
+
+class Solution:
+    def checkWays(self, pairs: List[List[int]]) -> int:
+        
+        def rec(pairs):
+            cnt = []
+            num_2_idx, idx_2_num = dict(), dict()
+            for pair in pairs:
+                if pair[0] not in num_2_idx:
+                    idx_2_num[len(cnt)] = pair[0]
+                    num_2_idx[pair[0]] = len(cnt)
+                    cnt.append(1)
+                else:
+                    cnt[num_2_idx[pair[0]]] += 1
+                if pair[1] not in num_2_idx:
+                    idx_2_num[len(cnt)] = pair[1]
+                    num_2_idx[pair[1]] = len(cnt)
+                    cnt.append(1)
+                else:
+                    cnt[num_2_idx[pair[1]]] += 1
+
+            roots = [idx_2_num[i] for i in range(len(cnt)) if cnt[i] == (len(cnt) - 1)]
+            root_num = len(roots)
+            if root_num >= 1:
+                
+                res = 0
+                root = roots[0]
+                # 对每一个可能的 root 都做一次选择
+                # 把包含 root 的 pair 都去除
+                idx_2_num = dict()
+                num_2_idx = dict()
+                count = 0
+
+                new_pairs = [pair for pair in pairs if root not in pair]
+
+                for pair in new_pairs:
+                    if pair[0] not in num_2_idx:
+                        num_2_idx[pair[0]] = count
+                        idx_2_num[count] = pair[0]
+                        count += 1
+                    if pair[1] not in num_2_idx:
+                        num_2_idx[pair[1]] = count
+                        idx_2_num[count] = pair[1]
+                        count += 1
+                
+                uf = UF(count)
+                for pair in new_pairs:
+                    uf.union(num_2_idx[pair[0]], num_2_idx[pair[1]])
+                
+                # print("new_pairs: ", new_pairs, count)
+
+                root_res = 1
+                
+                # print("uf.group: ", uf.get_group())
+
+                for idx_group in uf.get_group():
+                    group = [idx_2_num[i] for i in idx_group]
+                    pairs_group = []
+                    for pair in new_pairs:
+                        if pair[0] in group or pair[1] in group:
+                            pairs_group.append(pair)
+                    sub_res = rec(pairs_group)
+
+                    # print("pairs_group: ", pairs_group, sub_res)
+
+                    if sub_res == 0:
+                        root_res = 0
+                        break
+                    else:
+                        root_res = min(root_res * sub_res, 2)
+                res = min(root_res * root_num, 2)
+                return res
+            else:
+                return 0
+        return rec(pairs)
+```
+
+# 2022.02.16 - 1719. 重构一棵树的方案数
+
+LeetCode 史上最难周赛题目
+
+```python
+```
+
+# 2022.02.17 - 688. 骑士在棋盘上的概率
+
+仔细鉴别什么时候用回溯什么时候用动态规划。
+
+这道题用回溯和动态规划都能做，但是显然，回溯会浪费大量的时间。
+
+找到一定的判据来判断究竟什么时候用回溯，什么时候用动态规划。
+
+```python
+```
+
+# 2022.02.21 - 838. 推多米诺
+
+## 方法一：广度优先搜索
+
+以所有初始时刻被推倒的骨牌为起点，按时间发展顺序模拟骨牌的推倒，搜索出所有被推倒的骨牌。
+
+使用数组 `times` 来记录所有骨牌被推倒的时间，这个时间最大为 `len(dominoes)`。
+
+当遍历到一个骨牌 `i` 时，根据其下一个被推倒方向的骨牌 `ni` 的被推倒时间 `times[ni]` 来决定是否继续搜索：
+
+1. 如果 `times[ni] == -1` 说明是没有被推倒的竖直骨牌，那么将其记为推倒，更新 `times[ni]`，并且加入队列继续搜索。
+
+2. 如果 `times[ni] == times[i] + 1` 说明该骨牌在同一时刻受到另一个方向的推倒，那么根据规则它将保持竖直，`ans[ni] = '.'`，并且中止搜索。
+
+```python
+# 方法一： 模拟
+class Solution:
+    def pushDominoes(self, dominoes: str) -> str:
+        n = len(dominoes)
+        ans = ['.'] * n
+        times = [-1 for _ in range(n)]
+        directions = {'L': -1, 'R': 1}
+        q = deque()
+
+        # 把初始起点加入队列
+        for i, d in enumerate(dominoes):
+            if d != '.':
+                ans[i] = d
+                q.append((i, d))
+                times[i] = 0
+
+        # DFS
+        while q:
+            i, d = q.popleft()
+            ni = i + directions[d]
+            if 0 <= ni < n:
+                if times[i] + 1 == times[ni] and ans[ni] != '.':
+                    ans[ni] = '.'
+                elif times[ni] == -1:
+                    ans[ni] = d
+                    times[ni] = times[i] + 1
+                    q.append((ni, d))
+        
+        return ''.join(ans)
+```
+
+## 方法二： 双指针
+
+双指针搜索，任何连续竖立的多米诺骨牌构成的子串在最后的状态仅取决于该字串两端的多米诺骨牌：
+1. 如果两端的骨牌倒向相同方向，则这一串骨牌均倒向该方向；
+2. 如果两端的骨牌相向而倒，则这一串骨牌也相向而倒；
+3. 如果两端的骨牌方向相反，则这一串骨牌保持竖立。
+根据这一规则，使用双指针，寻找所有连续的竖立骨牌的区间，对区间两端点加以分类讨论，然后对区间内部竖立的骨牌处理即可。
+
+为了方便，可以在骨牌 list 两端分别加上向外倒的两个骨牌，不影响结果，但是方便代码计算过程。
+
+```python
+# 方法二： 双指针
+class Solution:
+    def pushDominoes(self, dominoes: str) -> str:
+        # 两端分别加上一张向外倒的骨牌降低程序复杂性
+        ans = ['L'] + list(dominoes) + ['R']
+        n = len(ans)
+        i = 0 
+        while i < n - 1:
+            # 寻找左端点的骨牌 i
+            if ans[i] == '.':
+                i += 1
+                continue
+            # 寻找右端点的骨牌 j
+            j = i + 1
+            while ans[j] == '.':
+                j += 1
+                continue
+            # 如果中间存在区间，则开始分类讨论
+            if i < j - 1:
+                if ans[i] == ans[j]:
+                    # 两个端点骨牌都倒向一个方向
+                    for k in range(i+1, j):
+                        ans[k] = ans[i]
+                elif ans[i] == 'R':
+                    # 两个端点骨牌相向而倒
+                    for k in range((j-i-1)//2):
+                        ans[i+k+1] = 'R'
+                        ans[j-k-1] = 'L'
+            # 终点变成下一个区间的起点
+            i = j
+        
+        # 返回答案时去掉初始加上的两端的骨牌
+        return ''.join(ans[1:-1])
+```
+
+# 2022.02.22 - 1994. 好子集的数目
